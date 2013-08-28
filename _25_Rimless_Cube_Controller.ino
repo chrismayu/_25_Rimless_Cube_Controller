@@ -230,7 +230,7 @@ char *secondhalf;
 #define Chiller 50 //24
 #define PowerHead 22
 #define Skimmer 25
-#define RefugeLED 50//31
+#define RefugeLED 31
 #define relayPin3 34
 #define relayPin4 37
 #define relayPin1 35
@@ -238,7 +238,7 @@ char *secondhalf;
 #define Grounding_plug 50
 #define Spare_Plug 50//26  // #6 plug ATS transformer
 int relay_shelf_light = 30;   //30 working shelf light
-int relay_Refuge = 31;      //31  working refuge light
+//int relay_Refuge = 31;      //31  working refuge light
 
 //1 = 31  - ATS pump  
 //2 = 30 - Refuge Lights
@@ -417,8 +417,8 @@ boolean  Over_temp_Level_3_message_sent = false;
 
 
 // Refuge
-const float FugeLightOn = 4; 
-const float FugeLightOff = 22;
+const float FugeLightOn = 23; 
+const float FugeLightOff = 7;
 float FugeLightOFF12 = 0; 
 
  
