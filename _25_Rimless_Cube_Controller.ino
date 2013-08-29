@@ -343,7 +343,7 @@ int feed_time = 5;  //Turn off power heads for this amount of time when feed mod
 int pumps_off = -10; //placeholder  --don't change
 int skimmer_off = -10;  //placeholder ---don't change
 float skimmer_delay_start_time = 0;
-float skimmer_delay_time = 0.02;
+float skimmer_delay_time = 0.05;  //5 minute start up delay
 boolean skimmer_delay_bool = true;
 
 
@@ -860,25 +860,9 @@ void Skimmer_Controller(){
    if (skimmer_delay_bool == true ){
 turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
    }
-  Serial.print("skimmer_delay_start_time "); 
- Serial.println(skimmer_delay_start_time);
  
- Serial.print("current_time "); 
- Serial.println(current_time);
  
-  Serial.print("turn_on_skimmer_when  "); 
-   Serial.println(turn_on_skimmer_when);
-   
-    Serial.print("skimmer_delay_bool  "); 
-   Serial.println(skimmer_delay_bool);
-   
-   
-   Serial.print("set_Skimmer_output_to  "); 
-   Serial.println(set_Skimmer_output_to);
-      Serial.print("Skimmer Output  "); 
-   Serial.println(Skimmer);
-      
-    Serial.println("     "); 
+ 
  if (current_time  >= turn_on_skimmer_when){
    if (skimmer_delay_bool == true ){
    
