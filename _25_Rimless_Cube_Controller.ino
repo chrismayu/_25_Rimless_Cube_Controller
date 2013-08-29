@@ -343,7 +343,7 @@ int feed_time = 5;  //Turn off power heads for this amount of time when feed mod
 int pumps_off = -10; //placeholder  --don't change
 int skimmer_off = -10;  //placeholder ---don't change
 float skimmer_delay_start_time = 0;
-float skimmer_delay_time = 0.05;
+float skimmer_delay_time = 0.02;
 boolean skimmer_delay_bool = true;
 
 
@@ -663,8 +663,10 @@ void setup() {
   RTC.setCTRL();
  
 
-
-
+   RTC.getTime();
+ 
+  skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
+  skimmer_delay_bool = true;
   //LCD.Clear();
 
 
@@ -767,9 +769,7 @@ Serial.println(TanktempC);
 
    Serial.println("Ethernet Ready");
   
-  
-  skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
-  skimmer_delay_bool = true;
+ 
 
 
  
@@ -871,8 +871,15 @@ turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
    
     Serial.print("skimmer_delay_bool  "); 
    Serial.println(skimmer_delay_bool);
+   
+   
+   Serial.print("set_Skimmer_output_to  "); 
+   Serial.println(set_Skimmer_output_to);
+      Serial.print("Skimmer Output  "); 
+   Serial.println(Skimmer);
+      
     Serial.println("     "); 
- if (current_time  && turn_on_skimmer_when){
+ if (current_time  >= turn_on_skimmer_when){
    if (skimmer_delay_bool == true ){
    
    
@@ -1242,9 +1249,10 @@ void FeedingMode(){
       // Turn mainpump On     
       set_mainpump_output_to = true;  
   
-  if (skimmer_delay_bool == false){
+  if (skimmer_delay_bool == false && set_Skimmer_output_to == false){
    //skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
   skimmer_delay_bool = true;
+    Serial.println("setting time in Feeding Mode");
   
     }
       
