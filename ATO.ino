@@ -74,7 +74,19 @@ Ato_okay_to_run_now = ATO_delay_between_runs + ATO_ran_last;
 
 // adds a delay between runnings - so it isn't starting and stopping
 
+Serial.print("Ato_okay_to_run_now "); 
+ Serial.println(Ato_okay_to_run_now);
+ 
+ Serial.print("ATO_ran_last "); 
+ Serial.println(ATO_ran_last);
+ Serial.print("       "); 
+  
+
+
  if(current_time >= Ato_okay_to_run_now){ 
+   
+   
+   
 
   Run_ATO(); 
  }

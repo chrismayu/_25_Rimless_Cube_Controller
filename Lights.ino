@@ -27,7 +27,11 @@ void RunFugelight()
   } 
    
    
-   
+   void turn_on_shelf_light(){
+  
+  shelf_lights = 3;  /// turn on shelf light to start timer
+  
+}
    
 void Shelf_Light(){
 
@@ -67,14 +71,14 @@ void Shelf_Light(){
   
   
   
- //Serial.println(shelf_lights_off);
- // Serial.println(RTC.minute);
- // Serial.println(shelf_lights_on_minute);
+ Serial.println(shelf_lights_off);
+  Serial.println(RTC.minute);
+  Serial.println(shelf_lights_on_minute);
   
   if((shelf_lights_on_hour == RTC.hour  && shelf_lights_on_minute == RTC.minute  && shelf_lights_on_second <= RTC.second) || shelf_lights_off == -10){
 
   
-      // Serial.println("Turning Off light");
+        Serial.println("Turning Off light");
        digitalWrite(relay_shelf_light, HIGH);
     
     shelf_lightsrunning = 0;
@@ -82,7 +86,7 @@ void Shelf_Light(){
 
   }
   else{ 
-     // Serial.println("Turning On light");
+       Serial.println("Turning On light");
      digitalWrite(relay_shelf_light, LOW);
     }
     shelf_lightsrun = HIGH;

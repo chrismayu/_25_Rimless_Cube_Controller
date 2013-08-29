@@ -769,8 +769,7 @@ Serial.println(TanktempC);
 
    Serial.println("Ethernet Ready");
   
- 
-
+ turn_on_shelf_light();
 
  
 }
