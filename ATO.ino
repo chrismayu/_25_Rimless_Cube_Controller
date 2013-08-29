@@ -10,7 +10,7 @@ void ATO(){   /// Main ATO Program Controller
     } 
     else{ 
       current_status_of_water_level = false;
-       // testing git controll
+       
     }
   // start the ATO on the correct time - allows it to only run between 8 am and 8:30 
   
@@ -55,7 +55,8 @@ void ATO(){   /// Main ATO Program Controller
     } 
  // } 
 
-
+//ATO_ran_last = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
+ //ATO_delay_between_runs;
   // Fault Code 
 
   float time_Fault = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
@@ -66,7 +67,18 @@ void ATO(){   /// Main ATO Program Controller
     ATO_Fault_Count = ATO_Fault_Count + 1; 
   } 
 
+float current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
+float Ato_okay_to_run_now;
+
+Ato_okay_to_run_now = ATO_delay_between_runs + ATO_ran_last;
+
+// adds a delay between runnings - so it isn't starting and stopping
+
+ if(current_time >= Ato_okay_to_run_now){ 
+
   Run_ATO(); 
+ }
+
 
 } 
 
@@ -93,7 +105,7 @@ void Run_ATO(){
 
   // strcpy(S_L_ATO_LAST_Screen_text, "ATO PUMP Running"); 
      S_L_ATO_LAST_Screen_text = "ATO PUMP Running"; 
-   
+   ATO_ran_last = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
    
   } 
   else{ 
@@ -109,6 +121,11 @@ void Run_ATO(){
         S_L_ATO_LAST_Screen_text = Last_ATO;  
         
         sent_ato_fault_message_to_iphone = LOW; 
+        
+        
+       ATO_delay_lenght_of_run = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
+        
+        
         } 
 
   } 

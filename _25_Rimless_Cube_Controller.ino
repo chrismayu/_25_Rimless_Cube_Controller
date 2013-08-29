@@ -328,6 +328,12 @@ boolean  sent_ato_fault_message_to_iphone = LOW;
 String S_L_ATO_LAST_Screen_text = "           ";
 String S_L_ATO_Screen_text = "            ";
 int ATO_Fault_Count = 0;
+float ATO_ran_last;
+float ATO_delay_between_runs = 0.05;
+float ATO_lenght_of_run = 0;
+float ATO_delay_lenght_of_run = 0.05;
+
+
 
 //Pump Controls
 int feedmode = 0;
@@ -337,7 +343,7 @@ int feed_time = 5;  //Turn off power heads for this amount of time when feed mod
 int pumps_off = -10; //placeholder  --don't change
 int skimmer_off = -10;  //placeholder ---don't change
 float skimmer_delay_start_time = 0;
-float skimmer_delay_time = 5.00;
+float skimmer_delay_time = 0.05;
 boolean skimmer_delay_bool = true;
 
 
@@ -765,6 +771,8 @@ Serial.println(TanktempC);
   skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
   skimmer_delay_bool = true;
 
+
+ 
 }
 
 
@@ -847,9 +855,23 @@ void loop() {
 void Skimmer_Controller(){
   
  float current_time  = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
- float turn_on_skimmer_when = skimmer_delay_start_time;
-turn_on_skimmer_when = turn_on_skimmer_when +  skimmer_delay_time;
+ float turn_on_skimmer_when;
  
+   if (skimmer_delay_bool == true ){
+turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
+   }
+  Serial.print("skimmer_delay_start_time "); 
+ Serial.println(skimmer_delay_start_time);
+ 
+ Serial.print("current_time "); 
+ Serial.println(current_time);
+ 
+  Serial.print("turn_on_skimmer_when  "); 
+   Serial.println(turn_on_skimmer_when);
+   
+    Serial.print("skimmer_delay_bool  "); 
+   Serial.println(skimmer_delay_bool);
+    Serial.println("     "); 
  if (current_time  && turn_on_skimmer_when){
    if (skimmer_delay_bool == true ){
    
@@ -1221,7 +1243,7 @@ void FeedingMode(){
       set_mainpump_output_to = true;  
   
   if (skimmer_delay_bool == false){
-   skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
+   //skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
   skimmer_delay_bool = true;
   
     }
