@@ -336,6 +336,12 @@ boolean feedmoderun = LOW;
 int feed_time = 5;  //Turn off power heads for this amount of time when feed mode button is pressed.
 int pumps_off = -10; //placeholder  --don't change
 int skimmer_off = -10;  //placeholder ---don't change
+float skimmer_delay_start_time = 0;
+float skimmer_delay_time = 5.00;
+boolean skimmer_delay_bool = true;
+
+
+
 int pumps_off_second, pumps_off_minute, pumps_on_minute, pumps_off_hour, pumps_on_second, pumps_on_hour, pumps_on, skimmer_on_hour, skimmer_on_minute, skimmer_on_second;
 int waterchangemoderunning = 0;
 int waterchangemode = 0;
@@ -378,13 +384,14 @@ boolean disablemainpump = false;
 boolean disablepowerhead = false;
 boolean disablechiller = false; 
 boolean disablerefugelight = false; 
+boolean disableSkimmer = false; 
 
 boolean set_Heater_output_to = false;
 boolean set_chiller_output_to = false;
 boolean set_mainpump_output_to = false;
 boolean set_powerhead_output_to = false; 
 boolean set_refugelight_output_to = false;
- 
+boolean set_Skimmer_output_to = false; 
 
 boolean current_status_of_Main_Pump = false;
 boolean current_status_of_PowerHead = false;
@@ -393,6 +400,7 @@ boolean current_status_of_Chiller = false;
 boolean current_status_of_RefugeLED = false;
 boolean current_status_of_ato_valve = false;
 boolean current_status_of_water_level = false;
+boolean current_status_of_Skimmer = false;
 
 boolean pass_status_of_ato_valve = false;
 boolean pass_status_of_Main_Pump = false;
@@ -400,6 +408,7 @@ boolean pass_status_of_PowerHead = false;
 boolean pass_status_of_Heater = false;
 boolean pass_status_of_Chiller = false;
 boolean pass_status_of_RefugeLED = false;  
+boolean pass_status_of_Skimmer = false; 
 
 boolean  check_voltage_now = true;
 boolean Voltage_detect = false;
@@ -572,7 +581,7 @@ void setup() {
   
   //
     pinMode(relay_shelf_light, OUTPUT);
-  pinMode(relay_Refuge, OUTPUT); 
+//  pinMode(relay_Refuge, OUTPUT); 
  
   // Push Buttons
   pinMode(mode99pb, INPUT);
@@ -607,13 +616,13 @@ void setup() {
   pinMode(relayPin4, OUTPUT);
  
 
-   digitalWrite(relay_Refuge, LOW); // Refuge light
+ //  digitalWrite(relay_Refuge, LOW); // Refuge light
   digitalWrite(relay_shelf_light, HIGH); // Shelf  light
 
 
 
   // relay default value
-  digitalWrite(Skimmer, LOW);
+  digitalWrite(Skimmer, HIGH);
   digitalWrite(ATO_Valve, HIGH);
   digitalWrite(Main_Pump, LOW);
   digitalWrite(RefugeLED, HIGH);
@@ -752,6 +761,9 @@ Serial.println(TanktempC);
 
    Serial.println("Ethernet Ready");
   
+  
+  skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
+  skimmer_delay_bool = true;
 
 }
 
@@ -824,11 +836,33 @@ void loop() {
   ATO();
  // Serial.println("Screen ATO");
   Screen_ATO();
- 
+ Skimmer_Controller();
 
 }
 
 
+ 
+
+
+void Skimmer_Controller(){
+  
+ float current_time  = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
+ float turn_on_skimmer_when = skimmer_delay_start_time;
+turn_on_skimmer_when = turn_on_skimmer_when +  skimmer_delay_time;
+ 
+ if (current_time  && turn_on_skimmer_when){
+   if (skimmer_delay_bool == true ){
+   
+   
+     set_Skimmer_output_to = true; 
+   skimmer_delay_bool = false; 
+ 
+   }
+ 
+ }
+ 
+  
+}
 
  
 
@@ -1185,7 +1219,12 @@ void FeedingMode(){
     else{
       // Turn mainpump On     
       set_mainpump_output_to = true;  
-   
+  
+  if (skimmer_delay_bool == false){
+   skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
+  skimmer_delay_bool = true;
+  
+    }
       
     }
     feedmoderunning = 0;
@@ -1204,7 +1243,7 @@ void FeedingMode(){
     else{
       // Turn mainpump Off    
       set_mainpump_output_to = false;
-  
+  set_Skimmer_output_to = false;  
       
 
     }
@@ -1316,6 +1355,17 @@ void outputs(){
   }
   else{
     digitalWrite(RefugeLED, HIGH);
+  }
+
+
+
+  // Skimmer Control
+  if (set_Skimmer_output_to == true && disableSkimmer == false ){
+
+    digitalWrite(Skimmer, LOW);
+  }
+  else{
+    digitalWrite(Skimmer, HIGH);
   }
 
 
