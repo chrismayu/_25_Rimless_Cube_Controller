@@ -124,7 +124,7 @@ RTC.getTime();
 
 
   /// ATO Pump Start/Stop Logic
-  if(current_time >= Ato_okay_to_run_now && ATO_Run_Next_Time == HIGH && ATOfaulted == LOW){
+  if(current_time >= Ato_okay_to_run_now && ATO_Run_Next_Time == HIGH){ // && ATOfaulted == LOW){
 
     Serial.println("ATO Pump Running");
 
