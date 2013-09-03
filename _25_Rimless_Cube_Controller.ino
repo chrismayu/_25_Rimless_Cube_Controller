@@ -334,7 +334,10 @@ float ATO_delay_between_runs = 0.05;
 float ATO_lenght_of_run = 0;
 float ATO_delay_lenght_of_run = 0.05;
 float Watchman_timer_ATO_AT = 0;
- 
+float Ato_okay_to_run_now = 0;
+float Ato_Pump_last_ran = 0;
+float Ato_okay_to_run_pump_now = 0;
+float Run_Pump_for_only_timer = 0.03;
 
 
 
