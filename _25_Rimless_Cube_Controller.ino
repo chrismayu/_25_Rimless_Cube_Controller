@@ -324,6 +324,7 @@ char Last_ATO[17] = "???? "; // for small //LCD
 float Started_ATO = 0.00;
 float Fault_ATO_AT = 3.00;
 boolean ATO_Got_Time = LOW;
+boolean ATO_Got_Time_Pump = LOW;
 boolean  sent_ato_fault_message_to_iphone = LOW;
 String S_L_ATO_LAST_Screen_text = "           ";
 String S_L_ATO_Screen_text = "            ";
@@ -332,6 +333,8 @@ float ATO_ran_last;
 float ATO_delay_between_runs = 0.05;
 float ATO_lenght_of_run = 0;
 float ATO_delay_lenght_of_run = 0.05;
+float Watchman_timer_ATO_AT = 0;
+ 
 
 
 
