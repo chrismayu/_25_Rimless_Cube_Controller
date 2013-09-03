@@ -442,7 +442,12 @@ const float FugeLightOn = 23;
 const float FugeLightOff = 7;
 float FugeLightOFF12 = 0; 
 
- 
+
+//Light Shelf
+ int light_shelf_off = -10;  //placeholder ---don't change
+float light_shelf_delay_start_time = 0;
+float light_shelf_delay_time = 0.02;  //5 minute start up delay
+boolean light_shelf_delay_bool = true;
 
 
 // clock variables
@@ -792,7 +797,7 @@ void loop() {
   
  // checkGFCI();
  
- Shelf_Light();
+ 
  
  
  // Serial.println("get Temps");
@@ -850,6 +855,9 @@ void loop() {
  // Serial.println("Screen ATO");
   Screen_ATO();
  Skimmer_Controller();
+ 
+ 
+ Light_shelf_Controller();
 
 }
 

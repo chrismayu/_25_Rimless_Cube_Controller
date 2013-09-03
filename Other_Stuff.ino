@@ -91,15 +91,7 @@ void checkmode()
  
 
    Serial.println("PB pushed");
-   if (shelf_lightsrunning == 1){
-      shelf_lights = 1; //turn off feeding mode
-      Serial.println("Turn off light");
-    }
-    else
-    {
-      shelf_lights = 3; //turn ON feeding mode
-      Serial.println("Turn ON light");
-    }
+    turn_on_shelf_light();
   }
 
 
