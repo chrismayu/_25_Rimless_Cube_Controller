@@ -14,7 +14,13 @@ void ATO(){ /// Main ATO Program Controller
   float time_Fault;
   float start_time;
   boolean pump_is_running;
-
+  
+  
+ ATO_delay_between_runs = 0.05;
+ 
+  ATO_delay_lenght_of_run = 0.05;
+ 
+ Run_Pump_for_only_timer = 0.03;
 
   if(digitalRead(ATO_Valve) == HIGH ){
     pump_is_running = false;
@@ -63,13 +69,14 @@ void ATO(){ /// Main ATO Program Controller
 
   float ATO_delay_Water_level = ATO_delay_between_runs + ATO_ran_last;
 
-  if(ATO_delay_Water_level >= Ato_okay_to_run_now && pump_is_running == false){
+  if(ATO_delay_Water_level >= Ato_okay_to_run_now && start_delay_for_filled_timmer == false && pump_is_running == false){
     Serial.println("  ");
     Serial.println("Added Delay after reaching correct water level");
     Serial.print("ATO_delay_Water_level ");
     Serial.println(ATO_delay_Water_level);
     Serial.println(" ");
     Ato_okay_to_run_now = ATO_delay_Water_level;
+    start_delay_for_filled_timmer = true;
 
   }
 
@@ -107,14 +114,14 @@ void ATO(){ /// Main ATO Program Controller
       }
     }
 
-    ATO_ran_last = RTC.hour + current_time;
+    ATO_ran_last = current_time;
 
   }
   else{
 
     // Pump is OFF
-
-    Started_ATO = RTC.hour + current_time;
+    start_delay_for_filled_timmer = false;
+    Started_ATO = current_time;
   }
 
 
