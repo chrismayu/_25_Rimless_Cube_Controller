@@ -114,6 +114,48 @@ void Light_shelf_Controller(){
  
   }
  
+ 
+   if(digitalRead(relay_shelf_light) == LOW ){
+
+     Serial.print("-----  LIGHT START ---------- ");
+
+ 
+
+ 
+   Serial.print("relay_shelf_light out status: ");   
+   Serial.println(digitalRead(relay_shelf_light));
+   
+   Serial.print("turn_off_light_shelf_when ");
+   Serial.println(turn_off_light_shelf_when);
+   
+   Serial.print("Current Time ");
+   Serial.println(current_time);
+   
+   
+   
+   Serial.print("Will Run in: ");
+   
+   Serial.println(current_time - turn_off_light_shelf_when);
+   
+   Serial.print("light_shelf_delay_bool ");
+   
+   Serial.println(light_shelf_delay_bool);
+   
+   
+   
+   Serial.print("light_shelf_is_on ");
+   
+   Serial.println(light_shelf_is_on);
+   
+   
+    
+   
+   Serial.print(" ");
+   
+   Serial.print("-----  LIGHT END ---------- ");
+ 
+   }
+ 
 }
 
 
