@@ -448,6 +448,8 @@ float FugeLightOFF12 = 0;
 float light_shelf_delay_start_time = 0;
 float light_shelf_delay_time = 0.02;  //5 minute start up delay
 boolean light_shelf_delay_bool = true;
+boolean light_shelf_is_on = false;
+boolean turn_on_light_shelf = false;
 
 
 // clock variables
