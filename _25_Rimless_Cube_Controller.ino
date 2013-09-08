@@ -339,7 +339,8 @@ float Ato_Pump_last_ran = 0;
 float Ato_okay_to_run_pump_now = 0;
 float Run_Pump_for_only_timer = 0.03;
 boolean start_delay_for_filled_timmer = false;
-
+const float ATO_Master_On = 9; 
+const float ATO_Master_Off = 21;
 
 //Pump Controls
 int feedmode = 0;
@@ -352,7 +353,7 @@ float skimmer_delay_start_time = 0;
 float skimmer_delay_time = 0.05;  //5 minute start up delay
 boolean skimmer_delay_bool = true;
 
-
+float current_time = 0;
 
 int pumps_off_second, pumps_off_minute, pumps_on_minute, pumps_off_hour, pumps_on_second, pumps_on_hour, pumps_on, skimmer_on_hour, skimmer_on_minute, skimmer_on_second;
 int waterchangemoderunning = 0;
@@ -438,8 +439,8 @@ boolean  Over_temp_Level_3_message_sent = false;
 
 
 // Refuge
-const float FugeLightOn = 23; 
-const float FugeLightOff = 7;
+const float FugeLightOn = 1; 
+const float FugeLightOff = 9;
 float FugeLightOFF12 = 0; 
 
 
@@ -681,7 +682,8 @@ void setup() {
   skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
   skimmer_delay_bool = true;
   //LCD.Clear();
-
+ 
+  current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600);
 
 
 // BYTE Keyword is no longer supprted
@@ -791,7 +793,9 @@ Serial.println(TanktempC);
 
 ///// --------------------------VOID LOOP -------------------------------------------------------------------------------------------
 void loop() {
+ RTC.getTime();
 
+current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600);
  // Serial.println("Blink Test Led");
   blinkTestLed();
  

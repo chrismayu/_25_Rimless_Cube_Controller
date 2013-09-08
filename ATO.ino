@@ -1,16 +1,32 @@
 /****************Auto top off********************************************************************************/
-
-
-
 void ATO(){ /// Main ATO Program Controller
+
+ 
+
+  if(current_time >= ATO_Master_On && current_time <= ATO_Master_Off){
+  
+    ATO2();
+  
+    
+  }else{
+    
+      digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
+  }
+
+
+}
+
+
+
+
+
+void ATO2(){ /// Main ATO Program Controller
 
   Serial.print("-----  ATO Start ---------- ");
 
   //Delcarations
 
-  RTC.getTime();
-
-  float current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600);
+ 
   float time_Fault;
   float start_time;
   boolean pump_is_running;

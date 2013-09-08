@@ -11,11 +11,9 @@ void RunFugelight()
 
 
 
-  RTC.getTime();
+ 
 
-  // led on time
-
-    float time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600);
+float time = current_time;
 
   if(time >= FugeLightOn && time <= FugeLightOff)
 
@@ -51,9 +49,8 @@ void RunFugelight()
 void Light_shelf_Controller(){
 
 
-
-  RTC.getTime();
-  float current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600);
+ 
+ 
   float turn_off_light_shelf_when;
  
   if(digitalRead(relay_shelf_light) == LOW && light_shelf_is_on == false){
