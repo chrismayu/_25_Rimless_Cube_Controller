@@ -227,6 +227,7 @@ char *secondhalf;
 #define ATO_Valve 23 
 #define Main_Pump 24
 #define Heater 26
+#define Reactor 27 
 #define Chiller 50 //24
 #define PowerHead 22
 #define Skimmer 25
@@ -626,6 +627,7 @@ void setup() {
   pinMode(PowerHead, OUTPUT);
   pinMode(RefugeLED, OUTPUT);
   pinMode(Spare_Plug, OUTPUT);
+  pinMode(Reactor, OUTPUT);
   pinMode(Skimmer, OUTPUT);
   pinMode(Grounding_plug, OUTPUT);
   digitalWrite(Grounding_plug, HIGH);//was low 
@@ -642,6 +644,7 @@ void setup() {
 
 
   // relay default value
+  digitalWrite(Reactor, LOW);
   digitalWrite(Skimmer, HIGH);
   digitalWrite(ATO_Valve, HIGH);
   digitalWrite(Main_Pump, LOW);
