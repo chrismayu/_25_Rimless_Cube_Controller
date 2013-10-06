@@ -5,7 +5,16 @@ void ATO(){ /// Main ATO Program Controller
 
   if(current_time >= ATO_Master_On && current_time <= ATO_Master_Off){
   
+    
+    if(RTC.hour == 10 || RTC.hour == 12 || RTC.hour == 14 || RTC.hour == 16 || RTC.hour == 18 || RTC.hour == 20 || RTC.hour == 22 ){
+    
     ATO2();
+    
+      }else{
+    
+      digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
+    }
+  
   
     
   }else{
