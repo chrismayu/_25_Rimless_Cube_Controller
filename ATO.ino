@@ -1,25 +1,38 @@
 /****************Auto top off********************************************************************************/
 void ATO(){ /// Main ATO Program Controller
 
- 
+
+
+  if(RTC.hour == 8 && RTC.minute == 8){
+
+    ATO_Fault_Count = 0;
+    ATO_lenght_of_run = 0;
+    Watchman_timer_ATO_AT = 0;
+    Ato_okay_to_run_now = 0;
+    Ato_Pump_last_ran = 0;
+    Ato_okay_to_run_pump_now = 0;
+  }
+
 
   if(current_time >= ATO_Master_On && current_time <= ATO_Master_Off){
-  
-    
+
+
     if(RTC.hour == 10 || RTC.hour == 12 || RTC.hour == 14 || RTC.hour == 16 || RTC.hour == 18 || RTC.hour == 20 || RTC.hour == 22 ){
-    
-    ATO2();
-    
-      }else{
-    
+
+      ATO2();
+
+    }
+    else{
+
       digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
     }
-  
-  
-    
-  }else{
-    
-      digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
+
+
+
+  }
+  else{
+
+    digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
   }
 
 
@@ -35,17 +48,17 @@ void ATO2(){ /// Main ATO Program Controller
 
   //Delcarations
 
- 
+
   float time_Fault;
   float start_time;
   boolean pump_is_running;
-  
-  
- ATO_delay_between_runs = 0.05;
- 
+
+
+  ATO_delay_between_runs = 0.05;
+
   ATO_delay_lenght_of_run = 0.05;
- 
- Run_Pump_for_only_timer = 0.03;
+
+  Run_Pump_for_only_timer = 0.03;
 
   if(digitalRead(ATO_Valve) == HIGH ){
     pump_is_running = false;
@@ -158,55 +171,56 @@ void ATO2(){ /// Main ATO Program Controller
 
     digitalWrite(ATO_Valve, LOW); //turn ON ATO Pump
 
-  }else{
+  }
+  else{
 
     digitalWrite(ATO_Valve, HIGH); // Turn OFF Pump
 
   }
 
- 
-   Serial.print("ATO_Fault_Count: ");   
-   Serial.println(ATO_Fault_Count);
-   
-   Serial.print("Ato_okay_to_run_now ");
-   Serial.println(Ato_okay_to_run_now);
-   
-   Serial.print("Current Time ");
-   Serial.println(current_time);
-   
-   
-   
-   Serial.print("Will Run in: ");
-   
-   Serial.println(current_time - Ato_okay_to_run_now);
-   
-   Serial.print("ATO_ran_last ");
-   
-   Serial.println(ATO_ran_last);
-   
-   
-   
-   Serial.print("Water Level ");
-   
-   Serial.println(current_status_of_water_level);
-   
-   
-   
-   Serial.print("ATO_Run_Next_Time ");
-   
-   Serial.println(ATO_Run_Next_Time);
-   
-   
-   
-   Serial.print("ATO_Got_Time ");
-   
-   Serial.println(ATO_Got_Time);
-   
-   Serial.print(" ");
-   
-   Serial.print("-----  ATO END ---------- ");
-   
- 
+
+  Serial.print("ATO_Fault_Count: ");   
+  Serial.println(ATO_Fault_Count);
+
+  Serial.print("Ato_okay_to_run_now ");
+  Serial.println(Ato_okay_to_run_now);
+
+  Serial.print("Current Time ");
+  Serial.println(current_time);
+
+
+
+  Serial.print("Will Run in: ");
+
+  Serial.println(current_time - Ato_okay_to_run_now);
+
+  Serial.print("ATO_ran_last ");
+
+  Serial.println(ATO_ran_last);
+
+
+
+  Serial.print("Water Level ");
+
+  Serial.println(current_status_of_water_level);
+
+
+
+  Serial.print("ATO_Run_Next_Time ");
+
+  Serial.println(ATO_Run_Next_Time);
+
+
+
+  Serial.print("ATO_Got_Time ");
+
+  Serial.println(ATO_Got_Time);
+
+  Serial.print(" ");
+
+  Serial.print("-----  ATO END ---------- ");
+
+
 
 
 
@@ -224,7 +238,8 @@ void ATO2(){ /// Main ATO Program Controller
 
     Fault_meessage_to_Reef_Sense();
 
-  } else{
+  } 
+  else{
     sent_ato_fault_message_to_iphone = LOW;
   }
 }
@@ -308,6 +323,7 @@ void Fault_meessage_to_Reef_Sense(){
 
 
 }
+
 
 
 

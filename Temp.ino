@@ -233,11 +233,11 @@ void GetTemps(){
 
   if (RTC.second == 23)
   { 
-    Serial.print("running Ambient temp_______________");
+    //Serial.print("running Ambient temp_______________");
     AmbientSensor.requestTemperatures(); // Send the command to get temperatures
     AmbienttempC = AmbientSensor.getTempC(AmbientThermometer);
-    Serial.print("Ambient temp is:");
-    Serial.println(DallasTemperature::toFahrenheit(AmbienttempC)); // Converts AmbienttempC to Fahrenheit
+    //Serial.print("Ambient temp is:");
+    //Serial.println(DallasTemperature::toFahrenheit(AmbienttempC)); // Converts AmbienttempC to Fahrenheit
     int Ambient_tempforcheck = AmbienttempC;
     if(Ambient_tempforcheck <= 3 || Ambient_tempforcheck >= 70)
     {
@@ -298,11 +298,11 @@ void GetTemps(){
 
   if (RTC.second == 24)
   { 
-    Serial.print("running tank temp_______________");
+    //Serial.print("running tank temp_______________");
     TankSensor.requestTemperatures(); // Send the command to get temperatures
     TanktempC = TankSensor.getTempC(TankThermometer);
-    Serial.print("Tank temp is:");
-    Serial.println(DallasTemperature::toFahrenheit(TanktempC)); // Converts TanktempC to Fahrenheit
+   // Serial.print("Tank temp is:");
+   // Serial.println(DallasTemperature::toFahrenheit(TanktempC)); // Converts TanktempC to Fahrenheit
     int tempforcheck = TanktempC;
     if(tempforcheck <= 3 || tempforcheck >= 70)
     {
