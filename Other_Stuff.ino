@@ -106,16 +106,15 @@ void checkmode()
   {
  
 
-    //mode = 101;
-    Serial.print("101 pb pushed - ato");
-    if (checklevel_ATOrunning == 1){
-      checklevel_ATOrunning = 0; //turn off ATO mode
-      checklevel_ATO = 3;
-      //LCD.Clear();
+    Serial.println("102 pressed feeding mode");
+    // mode = 102;
+
+     if (feedmoderunning == 1){
+      feedmode = 3; //turn off feeding mode
     }
     else
     {
-      checklevel_ATO = 1; //turn ON waterchange mode
+      feedmode = 1; //turn ON feeding mode
     }
   }
   lastButton101 = currentButton101;
@@ -127,7 +126,7 @@ void checkmode()
   if (lastButton102 == LOW && currentButton102 == HIGH)
   {
 
- /*
+ 
     Serial.println("102 pressed w/c mode");
     // mode = 102;
 
@@ -139,7 +138,7 @@ void checkmode()
     {
       waterchangemode = 1; //turn ON waterchange mode
     }
-*/
+
 
   }
   lastButton102 = currentButton102;

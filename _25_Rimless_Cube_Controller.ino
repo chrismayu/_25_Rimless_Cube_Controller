@@ -214,9 +214,9 @@ char *secondhalf;
 
 #define mode99pb 50  // not used 
 #define mode100pb 38// shelf light
-#define mode101pb 45 //blue white   WC Button    .// ato
-#define mode102pb 50 //blue   Reset   //w/c
-#define mode103pb 47 //orange white   Feeding Mode    
+#define mode101pb 41 //blue white   WC Button    .// ato
+#define mode102pb 39 //blue   Reset   //w/c
+#define mode103pb 50 //orange white   Feeding Mode    
 #define mode104pb 50  // not used
 //47 feeding -  orange wire  103
 ///45 - ATO   100
@@ -234,7 +234,7 @@ char *secondhalf;
 #define RefugeLED 31
 #define relayPin3 34
 #define relayPin4 37
-#define relayPin1 35
+#define relayPin1 55//35
 #define relayPin2 36
 #define Grounding_plug 50
 #define Spare_Plug 50//26  // #6 plug ATS transformer
@@ -860,7 +860,7 @@ current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second /
   /// Test_ATO();  // Used to test inputs and outputs only
  
 //Serial.println("ATO");
-  ATO();
+ ATO();
  // Serial.println("Screen ATO");
   Screen_ATO();
  Skimmer_Controller();
