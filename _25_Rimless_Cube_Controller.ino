@@ -883,14 +883,26 @@ void Skimmer_Controller(){
 turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
    }
  
- 
+  if(waterchangemode == 1 || waterchangemoderunning == 1 || feedmoderunning == 1){
+       skimmer_delay_bool = true;
+       
+       } 
  
  if (current_time  >= turn_on_skimmer_when){
    if (skimmer_delay_bool == true ){
    
    
-     set_Skimmer_output_to = true; 
-   skimmer_delay_bool = false; 
+     
+       if(waterchangemode == 1 || waterchangemoderunning == 1 || feedmoderunning == 1){
+       
+       
+       }else{
+         set_Skimmer_output_to = true; 
+         skimmer_delay_bool = false; 
+       }
+   
+   
+ 
  
    }
  
@@ -1128,8 +1140,9 @@ void WaterChangeMode(){
     sprintf(Last_WaterChange, "%02d/%02d %02d:%02d", RTC.month, RTC.day, RTC.hour, RTC.minute);
 
     // Turn mainpump Off      
-    set_mainpump_output_to = false;   
-
+    set_mainpump_output_to = false;  
+   // Turn Skimmer Off 
+   set_Skimmer_output_to = false; 
     // Turn powerhead Off       
     set_powerhead_output_to = false;    
 
@@ -1147,7 +1160,8 @@ void WaterChangeMode(){
     else{
       // Turn mainpump On      
       set_mainpump_output_to = true;  
-      
+      //Turn Skimmer On
+      set_Skimmer_output_to = true; 
  
       
     }
@@ -1254,10 +1268,12 @@ void FeedingMode(){
     else{
       // Turn mainpump On     
       set_mainpump_output_to = true;  
+      set_Skimmer_output_to = true; 
   
   if (skimmer_delay_bool == false && set_Skimmer_output_to == false){
-   //skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
+   skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
   skimmer_delay_bool = true;
+  skimmer_delay_time = 0.45;
     Serial.println("setting time in Feeding Mode");
   
     }
@@ -1279,7 +1295,7 @@ void FeedingMode(){
     else{
       // Turn mainpump Off    
       set_mainpump_output_to = false;
-  set_Skimmer_output_to = false;  
+       set_Skimmer_output_to = false;  
       
 
     }
