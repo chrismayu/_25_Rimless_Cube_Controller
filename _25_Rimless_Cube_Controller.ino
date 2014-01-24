@@ -1,4 +1,3 @@
-
 /*
 
  addd:
@@ -875,12 +874,19 @@ current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second /
 
 
 void Skimmer_Controller(){
-  
+  //year *1000000   	month *  10000   	day * 100	   Hour   	Min / 60   	second / 3600
  float current_time  = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
  float turn_on_skimmer_when;
  
    if (skimmer_delay_bool == true ){
 turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
+
+	  Serial.println("Skimmer in Delay Mode ");
+  	Serial.println("Turn on Skimmer When: ");
+  	Serial.print(turn_on_skimmer_when);
+  	Serial.println("current_time: ");
+  	Serial.print(current_time);
+  	Serial.println("-------------- ");
    }
  
  
@@ -1128,7 +1134,10 @@ void WaterChangeMode(){
     sprintf(Last_WaterChange, "%02d/%02d %02d:%02d", RTC.month, RTC.day, RTC.hour, RTC.minute);
 
     // Turn mainpump Off      
-    set_mainpump_output_to = false;   
+    set_mainpump_output_to = false; 
+    
+    // Turn Skimmer OFF
+     set_Skimmer_output_to = false;  
 
     // Turn powerhead Off       
     set_powerhead_output_to = false;    
@@ -1148,7 +1157,12 @@ void WaterChangeMode(){
       // Turn mainpump On      
       set_mainpump_output_to = true;  
       
- 
+        if (skimmer_delay_bool == false && set_Skimmer_output_to == false){
+         skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
+         skimmer_delay_bool = true;
+          Serial.println("setting time in Feeding Mode");
+  
+         }
       
     }
 
@@ -1256,8 +1270,8 @@ void FeedingMode(){
       set_mainpump_output_to = true;  
   
   if (skimmer_delay_bool == false && set_Skimmer_output_to == false){
-   //skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
-  skimmer_delay_bool = true;
+    skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
+      skimmer_delay_bool = true;
     Serial.println("setting time in Feeding Mode");
   
     }
@@ -1279,7 +1293,9 @@ void FeedingMode(){
     else{
       // Turn mainpump Off    
       set_mainpump_output_to = false;
-  set_Skimmer_output_to = false;  
+      
+      // Turn Skimmer OFF
+      set_Skimmer_output_to = false;  
       
 
     }
