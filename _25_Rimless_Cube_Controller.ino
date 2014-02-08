@@ -353,6 +353,7 @@ int skimmer_off = -10;  //placeholder ---don't change
 float skimmer_delay_start_time = 0;
 float skimmer_delay_time = 0.05;  //5 minute start up delay
 boolean skimmer_delay_bool = true;
+ float turn_on_skimmer_when = 0;
 
 float current_time = 0;
 
@@ -825,8 +826,7 @@ current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second /
   RunFugelight();
 //  Serial.println("Print Heater");
    printHeater();
-//  Serial.println("Print Chiller");
-  printChiller();
+ 
  
  
 //  Serial.println("Feeding Mode");
@@ -877,14 +877,14 @@ current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second /
 void Skimmer_Controller(){
   
  float current_time  = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
- float turn_on_skimmer_when;
+ //float turn_on_skimmer_when;
  
    if (skimmer_delay_bool == true ){
-turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
+//turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
    }
  
   if(waterchangemode == 1 || waterchangemoderunning == 1 || feedmoderunning == 1){
-       skimmer_delay_bool = true;
+      // skimmer_delay_bool = true;
        
        } 
  
@@ -894,8 +894,7 @@ turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
    
      
        if(waterchangemode == 1 || waterchangemoderunning == 1 || feedmoderunning == 1){
-       
-       
+
        }else{
          set_Skimmer_output_to = true; 
          skimmer_delay_bool = false; 
@@ -908,6 +907,26 @@ turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
  
  }
  
+ 
+ if (skimmer_delay_bool == true ){
+
+ 
+ Serial.print("skimmer_delay_bool");
+  Serial.println(skimmer_delay_bool);
+  
+   Serial.print("set_Skimmer_output_to");
+    Serial.println(set_Skimmer_output_to);
+    
+     Serial.print("turn_on_skimmer_when");
+  Serial.println(turn_on_skimmer_when);
+  
+   Serial.print("current_time");
+    Serial.println(current_time);
+ 
+ 
+    Serial.print("skimmer_delay_time");
+    Serial.println(skimmer_delay_time);
+ }
   
 }
 
@@ -939,20 +958,7 @@ void printDate()
     hour12 = RTC.hour;
     sprintf(text, "  %02d:%02d:%02d:AM", hour12, RTC.minute, RTC.second);
   }
-  ////LCDsmall.setCursor(0, 1);
-  ////LCDsmall.print(text); 
-
-  //sprintf(text, "Time: %02d:%02d:%02d :AM", hour12, RTC.minute, RTC.second);
-  if(keypadmode == 1 || keypadmode == 3){
-    //LCD.setCursor(0, 7);
-    //LCD.print(text);
-  }
-
-  if(keypadmode == Refuge_System_Screen){
-    //LCD.setCursor(0, 2);
-    //LCD.print(text);
-  }
-  // Serial.println(text);
+ 
 }
 
 
@@ -1025,114 +1031,12 @@ void printHeater()
   
 }
 
-
-///-------------------Fan/Chiller control--------------------------------------
-void printChiller()
-{
-  //Serial.println("*****  Chiller area *****");
-  float Tank_tempF =(DallasTemperature::toFahrenheit(TanktempC)); // Converts TanktempC to Fahrenheit
-
-  ///  put heater cut off here
-  //Serial.println(Tank_tempF);
-  //Serial.println(Chiller_on_temp);
-
-  int tank_tempf =  Tank_tempF;
-  if(tank_tempf > 100){     // turn Chiller off is T/C is in error   
-    // Turn chiller Off      
-    set_chiller_output_to = false;  
-    
-    //  Serial.println("*****  Chiller OFF *****");
-  }  
-  else {
-
-    if(tank_tempf > Chiller_on_temp){     // turn Chiller on if temp is above Chiller_on_temp
-      //digitalWrite(Chiller, LOW);
-      set_chiller_output_to = true;     
-      
-      //  Serial.println("*****  Chiller ON *****");
-    }  
-  }
-
-
-  if(tank_tempf < Chiller_off_temp){    //turn Chiller off if temp is below Chiller_off_temp
-    // Turn chiller Off      
-    set_chiller_output_to = false;     
-    
-    // Serial.println("*****  Chiller OFF *****");
-  }
-  if(keypadmode == Temp_Screen){
-    //LCD.GotoXY(0,7);           
-    if(digitalRead(Chiller) == LOW){
-      //LCD.print("Chiller : ON ");
-    }
-    else{
-      //LCD.print("Chiller : Off");
-    }
-  }
-  if(keypadmode == Chiller_Screen){
-    //LCD.setCursor(0, 2);
-    //LCD.print("Tank: "); 
-    float tempF =(DallasTemperature::toFahrenheit(TanktempC)); // Converts TanktempC to Fahrenheit
-    //LCD.print(tempF); 
-    //LCD.print(" F"); 
-
-    //LCD.GotoXY(0,4);
-    //LCD.print("Turn  ON: ");  
-
-    //LCD.print(Chiller_on_temp);
-    //LCD.GotoXY(0,5);
-    //LCD.print("Turn OFF: ");  
-
-    //LCD.print(Chiller_off_temp);
-    //LCD.GotoXY(0,7); 
-    if(digitalRead(Chiller) == LOW){
-      //LCD.print("Chiller: ON ");
-    }
-    else{
-      //LCD.print("Chiller: Off");
-    }
-  }
  
-
-}
-
  
-void ClearAlarmMessage()
-{
-  //LCD.setCursor(0, 3);
-  //LCD.print("                    "); 
-}
-
  
-void Buzzer(int targetPin, long frequency, long length) {
-  long delayValue = 1000000/frequency/2; // calculate the delay value between transitions
-  // 1 second's worth of microseconds, divided by the frequency, then split in half since
-  // there are two phases to each cycle
-  long numCycles = frequency * length/ 1000; // calculate the number of cycles for proper timing
-  // multiply frequency, which is really cycles per second, by the number of seconds to 
-  // get the total number of cycles to produce
-  for (long i=0; i < numCycles; i++){ // for the calculated length of time...
-    digitalWrite(targetPin,HIGH); // write the buzzer pin high to push out the diaphram
-    delayMicroseconds(delayValue); // wait for the calculated delay value
-    digitalWrite(targetPin,LOW); // write the buzzer pin low to pull back the diaphram
-    delayMicroseconds(delayValue); // wait againf or the calculated delay value
-  }
-}
-
 
 void WaterChangeMode(){
-
-  if(small_LCD_Screen == S_L_Last_WaterChange_Screen){
-
-    //LCDsmall.setCursor(0, 1);
-    //LCDsmall.print("W/C:");
-    //LCDsmall. print(Last_WaterChange);
-  }
-
-
-
-
-
+ 
 
   if(waterchangemode == 1 || waterchangemoderunning == 1 ){
     /// WaterChange mode running
@@ -1143,11 +1047,11 @@ void WaterChangeMode(){
     set_mainpump_output_to = false;  
    // Turn Skimmer Off 
    set_Skimmer_output_to = false; 
+    skimmer_delay_bool = false; 
+   
     // Turn powerhead Off       
     set_powerhead_output_to = false;    
-
-    
-
+ 
     waterchangemoderunning = 1;
     feedmode = 3;
 
@@ -1161,7 +1065,7 @@ void WaterChangeMode(){
       // Turn mainpump On      
       set_mainpump_output_to = true;  
       //Turn Skimmer On
-      set_Skimmer_output_to = true; 
+     // set_Skimmer_output_to = true; 
  
       
     }
@@ -1171,21 +1075,6 @@ void WaterChangeMode(){
     
   }
   waterchangemode = 0;   
-
-
-
-  if(waterchangemoderunning == 1 ){
-
-    if(keypadmode == Main_Screen){ 
-      //LCD.GotoXY(0,6);
-      //LCD.print("W/C Mode Active");
-    } 
-    if(keypadmode == Pump_Control_Screen){ 
-      //LCD.GotoXY(0,6);
-      //LCD.print("W/C Mode Active");
-    } 
-  }
-
  
 }
 
@@ -1193,39 +1082,12 @@ void FeedingMode(){
 
   //Pump mode 4 
   //Feed Mode Settings mode 10
-  if(keypadmode == Pump_Control_Screen){ 
-    //LCD.GotoXY(0,6);
-    //LCD.print("Feeding Mode:");
-  }
-
-
-  if(keypadmode == Feed_Mode_Screen){ 
-    //LCD.GotoXY(0,6);
-    //LCD.print("Feeding Mode:");
-  }
-
-
-
-  if(small_LCD_Screen == S_L_Last_Feeding_Screen){
-
-    //LCDsmall.setCursor(0, 1);
-    //LCDsmall.print("Feed:");
-    //LCDsmall. print(Last_Feeding);
-  }
-
-
+ 
   if(feedmode == 1){ 
     Serial.print("feeding mode active");
-
-
+ 
     sprintf(Last_Feeding, "%02d/%02d %02d:%02d", RTC.month, RTC.day, RTC.hour, RTC.minute);
-
-    if(keypadmode == Main_Screen){ 
-      //LCD.GotoXY(0,6);
-      //LCD.print("FeedMode:Active");
-    }
-
-
+ 
     // if(feedmode == 1 && digitalRead(Main_Pump) == HIGH){
     pumps_off = 10;
 
@@ -1247,37 +1109,27 @@ void FeedingMode(){
 
   if(feedmode == 3 && feedmoderunning == 1){
     pumps_off = -10; // turns off feeding mode
-
-    if(keypadmode == Feed_Mode_Screen || keypadmode == Pump_Control_Screen){ 
-      //LCD.GotoXY(0,6);
-      //LCD.print("             ");
-    }
-
-
-
-    if(keypadmode == Main_Screen){ 
-      //LCD.GotoXY(0,6);
-      //LCD.print("               ");
-    }
+ 
   }
 
   if((pumps_on_hour == RTC.hour  && pumps_on_minute == RTC.minute  && pumps_on_second <= RTC.second) || pumps_off == -10){
 
     if(waterchangemode == 1 || waterchangemoderunning == 1 ){
+       
     }
     else{
       // Turn mainpump On     
       set_mainpump_output_to = true;  
-      set_Skimmer_output_to = true; 
+     // set_Skimmer_output_to = true; 
   
   if (skimmer_delay_bool == false && set_Skimmer_output_to == false){
    skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
   skimmer_delay_bool = true;
   skimmer_delay_time = 0.45;
-    Serial.println("setting time in Feeding Mode");
+  turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
+    Serial.println("setting time in Feeding Mode**********************************************************************");
   
     }
-      
     }
     feedmoderunning = 0;
     pumps_off = -10;
@@ -1288,16 +1140,13 @@ void FeedingMode(){
 
     if(waterchangemode == 1 || waterchangemoderunning == 1 || ATOmoderun == HIGH){
 
-
-
-
     }
     else{
       // Turn mainpump Off    
       set_mainpump_output_to = false;
-       set_Skimmer_output_to = false;  
-      
-
+       set_Skimmer_output_to = false; 
+       skimmer_delay_bool = false; 
+       
     }
     feedmoderun = HIGH;
     feedmoderunning = 1;
@@ -1323,22 +1172,8 @@ void FeedingMode(){
     pumps_off_minute = pumps_off_second / 60;
 
     if(pumps_off_minute < 10){
-      if(keypadmode == Pump_Control_Screen || keypadmode == Feed_Mode_Screen){ 
-        //LCD.print(" ");
-      }
-    }
-    if(keypadmode == Pump_Control_Screen || keypadmode == Feed_Mode_Screen){ 
-      //LCD.print(pumps_off_minute);  //minutes until pumps turn on 
-      //LCD.print(":"); 
-    }
-    if(pumps_off_second % 60 < 10){
-      if(keypadmode == Pump_Control_Screen || keypadmode == Feed_Mode_Screen){ 
-        //LCD.print("0");
-      } 
-    }
-    if(keypadmode == Pump_Control_Screen || keypadmode == Feed_Mode_Screen){ 
-      //LCD.print(pumps_off_second % 60);  //seconds until pumps turn on 
-    }
+ 
+ 
 
   }
   else{
@@ -1361,7 +1196,7 @@ void FeedingMode(){
 
  
 
-
+  }
 
   
 void outputs(){

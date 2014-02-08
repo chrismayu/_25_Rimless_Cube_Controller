@@ -93,7 +93,7 @@ void Light_shelf_Controller(){
  
       // set_light_shelf_output_to = true;
 
-       Serial.println("Turning Off light");
+   //    Serial.println("Turning Off light");
 
       digitalWrite(relay_shelf_light, HIGH);
 
@@ -105,7 +105,7 @@ void Light_shelf_Controller(){
   } 
   else{
  
-    Serial.println("Turning On light");
+//    Serial.println("Turning On light");
 
     digitalWrite(relay_shelf_light, LOW);
  
@@ -114,13 +114,13 @@ void Light_shelf_Controller(){
  
    if(digitalRead(relay_shelf_light) == LOW ){
 
-     Serial.print("-----  LIGHT START ---------- ");
+  //   Serial.print("-----  LIGHT START ---------- ");
 
  
 
- 
+ /*
    Serial.print("relay_shelf_light out status: ");   
-   Serial.println(digitalRead(relay_shelf_light));
+  Serial.println(digitalRead(relay_shelf_light));
    
    Serial.print("turn_off_light_shelf_when ");
    Serial.println(turn_off_light_shelf_when);
@@ -150,7 +150,7 @@ void Light_shelf_Controller(){
    Serial.print(" ");
    
    Serial.print("-----  LIGHT END ---------- ");
- 
+ */
    }
  
 }
