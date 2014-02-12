@@ -16,21 +16,6 @@
  Analog Pin 1 = 
  Analog Pin 2 = //LCD POT Sensor
  
- to be used :
- Pin 0 = RX
- Pin 1 = TX
- Pin 2 = Alarm
- Pin 3 = 
- Pin 4 = buzzerPin
- Pin 5 = MainPanelTempSensorPin 
- Pin 6 = AmbientTempSenserPin
- Pin 7 = TankTempSensorPin
- Pin 8 = ChillerTempSensorPin
- Pin 9 = MainPanelTempSensorPin,LightingPanelTempSensorPin,LightHeatSinkTempSensorPin,RefugeLightTempSensorPin 
- Pin 10 = WhiteledLightPin
- Pin 11 = BlueledLightPin
- Pin 12 = MixedledLightPinwsWS
- Pin 13 = Onboard LED
  
  Current:
  ---------  PWM  ------------
@@ -91,16 +76,7 @@
  Pin 31 = Top Relay # 1 - ATS PUMP
  Pin 20 = Top Relay # 2 - Refuge LIghts
  
- //38 - gfci
- //39 - spare on termial block - ATO Float sensor
- // 47 feeding -  orange wire  103
- ///45 - ATO   100
- // 44 - water change  101
- // 43 reset 102
- //   
- // 42 -  //LCD Right PB
- // 41 -  //LCD centerPB
- // 40 -  IR
+ 
  
  // bottom
  //1 = 23
@@ -122,7 +98,6 @@
  //7 = 37
  //8 = 36
  
- /// no moon lighting code in project
  
  */
 
@@ -138,7 +113,7 @@
 #include <SPI.h>
 #include <Ethernet.h>
  
-
+#include <ChrisReefTank.h>
 
 #define ROWS 4
 #define COLS 4
@@ -178,32 +153,6 @@ boolean lastConnected = false;                 // state of the connection last t
 const unsigned long postingInterval = 10*1000;  //delay between updates to pachube.com
 
 
-unsigned int interval;
-char buff[64];
-int pointer = 0;
-int temp_Current;
-int temp_Low;
-int temp_High;
-String heroku_code = "0";
-char heroku_data[128]; // this is the string to upload to heroku
-
-boolean found_status_200 = false;
-boolean found_session_id = false;
-boolean found_CSV = false;
-char *found;
-unsigned int successes = 0;
-unsigned int failures = 0;
-boolean ready_to_update = true;
-boolean reading_heroku = false;
-boolean request_pause = false;
-boolean found_content = false;
-unsigned long last_connect;
-
-
-int counterValue;
-
-char *firsthalf;
-char *secondhalf;
 
  
 #define TankTempSensorPin 5 
@@ -218,10 +167,7 @@ char *secondhalf;
 #define mode102pb 39 //blue   Reset   //w/c
 #define mode103pb 50 //orange white   Feeding Mode    
 #define mode104pb 50  // not used
-//47 feeding -  orange wire  103
-///45 - ATO   100
-// 44 - water change  101
-// 43 reset 102
+ 
 
 #define GCFI_Monitoring 40
 #define ATO_Valve 23 
@@ -239,220 +185,16 @@ char *secondhalf;
 #define Grounding_plug 50
 #define Spare_Plug 50//26  // #6 plug ATS transformer
 int relay_shelf_light = 30;   //30 working shelf light
-//int relay_Refuge = 31;      //31  working refuge light
-
-//1 = 31  - ATS pump  
-//2 = 30 - Refuge Lights
-//3 = 33 - Mainlights
-
+ 
  
 
 // Menu and Keypad
 byte menu = 1;
-int keypadmode = 1;
-int Main_Screen = 1;
-int Temp_Screen = 2;
-int Display_Lighting_Screen = 3;
-int Pump_Control_Screen = 4;
-int Refuge_System_Screen = 5;
-int PH_Screen = 6;
-int ATO_Screen = 7;
-int Heater_Screen = 8;
-int Chiller_Screen = 9;
-int Feed_Mode_Screen = 10;
-int System_Temp_Screen = 11;
-int Omron_Relay_Screen = 12;
-int Manual_Lighting_Control_Screen = 13;
-int Set_Time_Date_Screen = 14;
-int Temp_Trending = 15;
-int LCD_Control_Screen = 16;
-int heroku_Screen = 17;
-int SetdatafromPOT1;
-int SetdatafromPOT2;
-int SetdatafromPOT3;
-float SetdatafromPOTfloat1;
-float SetdatafromPOTfloat2;
-float SetdatafromPOTfloat3;
-
-//Small //LCD
-
-int small_LCD_Screen = 1;
-int S_L_Ambient_Screen = 1;
-int S_L_PH_Screen = 9;
-int S_L_heroku_Screen = 2; //was 3
-int S_L_Last_Feeding_Screen = 3; //was 4
-int S_L_Last_WaterChange_Screen = 10;//was 5
-int S_L_ATO_Screen = 4; // was 6
-int S_L_ATO_LAST_Screen = 5;
-int return_to_first_screen = 6; // will put menu back to 1
-boolean S_L_Screen_Updated; 
-char herokutext_small_LCD[20] = "            ";
-
-// Heater
-float Heater_on_temp = 78.50;  //Turn on the Heater at this temp         ex 78 degrees = 7800, 78.5 degrees = 7850
-float Heater_off_temp = 79.00; //Turn off Heater at this temp
-int Heater_on_Default_Address = 30; // Eeprom address Allow for 4 spots
-int Heater_on_Default = 785; // Default Value  - Change "SetDefault" number if this value is changed
-int Heater_off_temp_Default_Address = 35; // Eeprom address Allow for 4 spots
-int Heater_off_temp_Default = 790;   // Default Value  - Change "SetDefault" number if this value is changed
-
-
-int alarm_low_temp = 7600;  //alarm will begin if temp falls below this value & lights will turn on to raise the temperature
-int alarm_high_temp = 8300;  //alarm will begin if temp is above this value
-
-//Chiller - Fan
-float Chiller_on_temp = 80.50;  //Turn on Chiller at this temp
-float Chiller_off_temp = 79.50; //turn Chiller off once below this temp
-int Chiller_on_Default_Address = 40; // Eeprom address Allow for 4 spots
-int Chiller_on_Default = 805; // Default Value  - Change "SetDefault" number if this value is changed
-int Chiller_off_temp_Default_Address = 45; // Eeprom address Allow for 4 spots
-int Chiller_off_temp_Default = 795;   // Default Value  - Change "SetDefault" number if this value is changed
-
-
-//ATO
-int ato_time = 3; //Number of seconds for the ATO to run each time the switch is on.
-int ATO_Hour;
-int checklevel_ATOrunning = 0;
-int checklevel_ATO = 0;
-const float ATO_time = 9.00;
-boolean ATOfaulted = LOW;
-boolean ATOmoderun = LOW;
-boolean ATO_Run_Next_Time = LOW;
-int ATO_Start_Checking_time = 3;//Turn off power heads for this amount of time when feed mode button is pressed.
-int ATO_off = -10; //placeholder  --don't change
-int ATO_off_second, ATO_off_minute, ATO_on_minute, ATO_off_hour, ATO_on_second, ATO_on_hour, ATO_on;
-char Last_ATO[17] = "???? "; // for small //LCD
-float Started_ATO = 0.00;
-float Fault_ATO_AT = 3.00;
-boolean ATO_Got_Time = LOW;
-boolean ATO_Got_Time_Pump = LOW;
-boolean  sent_ato_fault_message_to_iphone = LOW;
-String S_L_ATO_LAST_Screen_text = "           ";
-String S_L_ATO_Screen_text = "            ";
-int ATO_Fault_Count = 0;
-float ATO_ran_last;
-float ATO_delay_between_runs = 0.05;
-float ATO_lenght_of_run = 0;
-float ATO_delay_lenght_of_run = 0.05;
-float Watchman_timer_ATO_AT = 0;
-float Ato_okay_to_run_now = 0;
-float Ato_Pump_last_ran = 0;
-float Ato_okay_to_run_pump_now = 0;
-float Run_Pump_for_only_timer = 0.03;
-boolean start_delay_for_filled_timmer = false;
-const float ATO_Master_On = 9; 
-const float ATO_Master_Off = 21;
-
-//Pump Controls
-int feedmode = 0;
-int feedmoderunning = 0;
-boolean feedmoderun = LOW;
-int feed_time = 5;  //Turn off power heads for this amount of time when feed mode button is pressed.
-int pumps_off = -10; //placeholder  --don't change
-int skimmer_off = -10;  //placeholder ---don't change
-float skimmer_delay_start_time = 0;
-float skimmer_delay_time = 0.05;  //5 minute start up delay
-boolean skimmer_delay_bool = true;
- float turn_on_skimmer_when = 0;
-
-float current_time = 0;
-
-int pumps_off_second, pumps_off_minute, pumps_on_minute, pumps_off_hour, pumps_on_second, pumps_on_hour, pumps_on, skimmer_on_hour, skimmer_on_minute, skimmer_on_second;
-int waterchangemoderunning = 0;
-int waterchangemode = 0;
-int WC_time = 25;  //Turn off power heads for this amount of time when feed mode button is pressed.
-int WC_OFF = -10; //placeholder  --don't change
-int WC_off_second, WC_off_minute, WC_on_minute, WC_off_hour, WC_on_second, WC_on_hour, WC_on;
-char Last_Feeding[20] = "    ??????       "; // for small //LCD
-char Last_WaterChange[20] = "   ???????      "; // for small //LCD
-
-
-//Mode Control
-int mode = 100;
-int mode100 = 0;
-int mode101 = 0;
-int mode102 = 0;
-int mode103 = 0;
-int mode104 = 0;
-boolean lastButton99 = LOW;
-boolean currentButton99 = LOW;
-boolean lastButton100 = LOW;
-boolean currentButton100 = LOW;
-boolean lastButton101 = LOW;
-boolean currentButton101 = LOW;
-boolean lastButton102 = LOW;
-boolean currentButton102 = LOW;
-boolean lastButton103 = LOW;
-boolean currentButton103 = LOW;
-boolean lastButton104 = LOW;
-boolean currentButton104 = LOW;
-
- 
  
 
-// Outputs
-boolean GFCI_tripped = false;
-boolean Found_Voltage_Problem = false;
-
-boolean disableheater = false;
-boolean disablemainpump = false;
-boolean disablepowerhead = false;
-boolean disablechiller = false; 
-boolean disablerefugelight = false; 
-boolean disableSkimmer = false; 
-
-boolean set_Heater_output_to = false;
-boolean set_chiller_output_to = false;
-boolean set_mainpump_output_to = false;
-boolean set_powerhead_output_to = false; 
-boolean set_refugelight_output_to = false;
-boolean set_Skimmer_output_to = false; 
-
-boolean current_status_of_Main_Pump = false;
-boolean current_status_of_PowerHead = false;
-boolean current_status_of_Heater = false;
-boolean current_status_of_Chiller = false;
-boolean current_status_of_RefugeLED = false;
-boolean current_status_of_ato_valve = false;
-boolean current_status_of_water_level = false;
-boolean current_status_of_Skimmer = false;
-
-boolean pass_status_of_ato_valve = false;
-boolean pass_status_of_Main_Pump = false;
-boolean pass_status_of_PowerHead = false;
-boolean pass_status_of_Heater = false;
-boolean pass_status_of_Chiller = false;
-boolean pass_status_of_RefugeLED = false;  
-boolean pass_status_of_Skimmer = false; 
-
-boolean  check_voltage_now = true;
-boolean Voltage_detect = false;
-boolean Found_Voltage_Problem_iphone_sent = false;
-boolean GFCI_tripped_iphone_sent = false;
-int Voltage_lastchecked;
 
 
-float  Level_1_Overtemp = 82.50;
-float  Level_2_Overtemp = 83.00;
-float  Level_3_Overtemp = 84.00;
-boolean  Over_temp_Level_1_message_sent = false;
-boolean  Over_temp_Level_2_message_sent = false;
-boolean  Over_temp_Level_3_message_sent = false;
-
-
-// Refuge
-const float FugeLightOn = 1; 
-const float FugeLightOff = 9;
-float FugeLightOFF12 = 0; 
-
-
-//Light Shelf
- int light_shelf_off = -10;  //placeholder ---don't change
-float light_shelf_delay_start_time = 0;
-float light_shelf_delay_time = 0.02;  //5 minute start up delay
-boolean light_shelf_delay_bool = true;
-boolean light_shelf_is_on = false;
-boolean turn_on_light_shelf = false;
+ 
 
 
 // clock variables
@@ -465,51 +207,6 @@ byte curHour;
 byte oldHour;
 
  
-// PH and ORP stamp
-int orpValue = 0;
-char PHtext[20];
-int PHerror;
-boolean PH_Problem_message_sent = false;
-char PH_Temp_data[15]; 
-
-
-const float pHMax = 6.90;
-const float pHMin = 6.50;
-const float pHMaxAlarm = 8.5;
-const float pHMinAlarm = 7.3;
-float pHCalibrationValue = -0.18;// -0.18  Jan 8 2011 with real PH Buffer 7
-float pHValue = 0.0;
-float calPHValue = 0.0;
-const int eeAddrPHCal = 5;
-float PH_heroku_AVG;
-float hourlastsent;
-
-
-//// heroku 
-
-//char heroku_data[128]; // this is the string to upload to heroku
-
-float tempF_heroku;
-float tempF2_heroku;
-int Tanktemp_first_heroku;
-int Tanktemp_second_heroku;
-
-float PH_heroku;
-float PH2_heroku;
-int TankPH_first_heroku;
-int TankPH_second_heroku;
-
-boolean temps_up = false;
-
-float Ambient_tempF_heroku;
-float Ambient_tempF2_heroku;
-int Ambienttemp_first_heroku;
-int Ambienttemp_second_heroku;
-float AmbienttempC_Avg;
-
-boolean Maintain_connection_sent = false;
-char herokutext[20];
-boolean last_connection_sent = false;
 
 /// Main Tank Temp---------
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
@@ -518,19 +215,7 @@ OneWire oneWire(TankTempSensorPin);
 DallasTemperature TankSensor(&oneWire);
 // arrays to hold device address
 DeviceAddress TankThermometer;
-float TanktempC;
-float TanktempC_Avg;
-float TanktempF;
-float MTTEMPMAX = 90;
-float MTTEMPMIN = 67;
-/// Tank Temp Monitoring
-int Tank_low_temp = 8900; // Send Message Tank at this temp
-int Tank_high_temp = 84; // Send Message Tank at this temp
-int Tank_TC; // Temp sensor mounted in the Tank
-int Whole, Fract, High, Low; // Display High and Low
-float  Main_Tank_High = 3;//history - 
-float  Main_Tank_Low = 300;
-boolean Main_Tank_Over_temp_message_sent = false;
+ 
 
 
 /// Ambient Temp---------
@@ -540,55 +225,8 @@ OneWire oneWire_Ambient(AmbientTempSenserPin);
 DallasTemperature AmbientSensor(&oneWire_Ambient);
 // arrays to hold device address
 DeviceAddress AmbientThermometer;
-float AmbienttempC;
-float AmbienttempF;
-float AmbientTEMPMAX = 90;
-float AmbientTEMPMIN = 67;
-/// Tank Temp Monitoring
-int Ambient_low_temp = 8900; // Send Message Tank at this temp
-int Ambient_high_temp = 8900; // Send Message Tank at this temp
-int Ambient_TC; // Temp sensor mounted in the Tank
-int AmbientWhole, AmbientFract, AmbientHigh, AmbientLow; // Display High and Low
-float  Ambient_High = 3;//history - 
-float  Ambient_Low = 300;
-float Ambient_tempF_heroku_2;
-float Tank_tempF_heroku_2;
-
-
-  
-  
-
-// Ambient Temp Averaging
-const int Ambient_Temp_Avg_numReadings = 15;
-int Ambient_Temp_Avg_readings[Ambient_Temp_Avg_numReadings];      // the readings from the analog input
-int Ambient_Temp_Avg_index = 0;                  // the index of the current reading
-int  Ambient_Temp_Avg_total = 0;                  // the running total
-float  Ambient_Temp_Avg_average = 0;   
-int Ambient_Temp_Avg_index_2 = 0; // the average 
-
-// Tank Temp Averaging 
-const int Tank_Temp_Avg_numReadings = 2;
-int Tank_Temp_Avg_readings[Tank_Temp_Avg_numReadings];      // the readings from the analog input
-int Tank_Temp_Avg_index = 0;                  // the index of the current reading
-int Tank_Temp_Avg_total = 0;                  // the running total
-float Tank_Temp_Avg_average = 0;                // the average
-int Tank_Temp_Avg_index_2 = 0; 
-
-// PH Averaging 
-const int PH_Avg_numReadings = 4;
-int PH_Avg_readings[PH_Avg_numReadings];      // the readings from the analog input
-int PH_Avg_index = 0;                  // the index of the current reading
-int  PH_Avg_total = 0;                  // the running total
-float PH_Avg_average = 0; 
-int PH_Avg_index_2 = 0;  // the average
-
-
-
-
  
-
-
-
+ 
 ///// --------------------------VOID SETUP ------------------------------------------------------------------------------------------
 
 void setup() {
