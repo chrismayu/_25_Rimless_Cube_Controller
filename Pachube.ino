@@ -14,7 +14,7 @@ void status_of_heroku_info(){
 
 
 
-  if(digitalRead(Main_Pump) == LOW){
+  if( bottom_relays.digitalRead(Main_Pump) == LOW){
 
     current_status_of_Main_Pump = true;
 
@@ -28,7 +28,7 @@ void status_of_heroku_info(){
 
 
 
-  if(digitalRead(PowerHead) == LOW){
+  if( bottom_relays.digitalRead(PowerHead) == LOW){
 
     current_status_of_PowerHead = true;
 
@@ -42,7 +42,7 @@ void status_of_heroku_info(){
 
 
 
-  if(digitalRead(Heater) == LOW){
+  if( bottom_relays.digitalRead(Heater) == LOW){
 
     current_status_of_Heater = true;
 
@@ -55,22 +55,11 @@ void status_of_heroku_info(){
     }
 
     
-
-  if(digitalRead(Chiller) == LOW){
-
-    current_status_of_Chiller = true;
-
-    }
-
-    else{
-
-    current_status_of_Chiller = false;
-
-    }
+ 
 
 
 
-  if(digitalRead(RefugeLED) == LOW){
+  if(top_relays.digitalRead(RefugeLED) == LOW){
 
     current_status_of_RefugeLED = true;
 
@@ -86,7 +75,7 @@ void status_of_heroku_info(){
 
 
 
-  if(digitalRead(Skimmer) == LOW){
+  if( bottom_relays.digitalRead(Skimmer) == LOW){
 
     current_status_of_Skimmer = true;
 
@@ -104,7 +93,7 @@ void status_of_heroku_info(){
 
     
 
-  if(digitalRead(ATO_Valve) == LOW){
+  if( bottom_relays.digitalRead(ATO_Valve) == LOW){
 
     current_status_of_ato_valve = true;
 

@@ -83,13 +83,13 @@ void Voltage_Detected_Where(){
   //Turn off chiller and check
   if(Found_Voltage_Problem == false){
 
-    digitalWrite(Chiller, HIGH);
+    //digitalWrite(Chiller, HIGH);
     delay(200);
 
     //check for voltage
     if(Voltage_detect == true){
       //not chiller so turn back on
-      digitalWrite(Chiller, LOW);
+     // digitalWrite(Chiller, LOW);
 
     }
     else{
@@ -293,7 +293,7 @@ void checkGFCI(){
 
 
 
-  if(digitalRead(GCFI_Monitoring) == LOW) {
+  if(bottom_relays.digitalRead(GCFI_Monitoring) == LOW) {
     //LCD.Clear();
     GFCI_tripped = true;
      if(GFCI_tripped_iphone_sent == false){
@@ -302,7 +302,7 @@ void checkGFCI(){
       }
     
     Serial.print("Stating While loop");
-    if (digitalRead(GCFI_Monitoring) == LOW) {
+    if (bottom_relays.digitalRead(GCFI_Monitoring) == LOW) {
       Serial.print("Inside While loop");
       //LCD.GotoXY(0,1);
       //LCD.print("GCFI Has been Tripped  Please Reset");

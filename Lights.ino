@@ -53,7 +53,7 @@ void Light_shelf_Controller(){
  
   float turn_off_light_shelf_when;
  
-  if(digitalRead(relay_shelf_light) == LOW && light_shelf_is_on == false){
+  if( top_relays.digitalRead(relay_shelf_light) == LOW && light_shelf_is_on == false){
 
     light_shelf_is_on = true;
 
@@ -68,7 +68,7 @@ void Light_shelf_Controller(){
   }
 
  
-  if(digitalRead(relay_shelf_light) == HIGH ){
+  if( top_relays.digitalRead(relay_shelf_light) == HIGH ){
 
     light_shelf_is_on = false;
 
@@ -95,7 +95,7 @@ void Light_shelf_Controller(){
 
        Serial.println("Turning Off light");
 
-      digitalWrite(relay_shelf_light, HIGH);
+      top_relays.digitalWrite(relay_shelf_light, HIGH);
 
       light_shelf_delay_bool = false;
  
@@ -107,12 +107,12 @@ void Light_shelf_Controller(){
  
     Serial.println("Turning On light");
 
-    digitalWrite(relay_shelf_light, LOW);
+    top_relays.digitalWrite(relay_shelf_light, LOW);
  
   }
  
  
-   if(digitalRead(relay_shelf_light) == LOW ){
+   if( top_relays.digitalRead(relay_shelf_light) == LOW ){
 
      Serial.print("-----  LIGHT START ---------- ");
 
@@ -120,7 +120,7 @@ void Light_shelf_Controller(){
 
  
    Serial.print("relay_shelf_light out status: ");   
-   Serial.println(digitalRead(relay_shelf_light));
+   Serial.println( top_relays.digitalRead(relay_shelf_light));
    
    Serial.print("turn_off_light_shelf_when ");
    Serial.println(turn_off_light_shelf_when);
@@ -164,7 +164,7 @@ void Light_shelf_Controller(){
 void turn_on_shelf_light(){
 
   turn_on_light_shelf = true;
-  digitalWrite(relay_shelf_light, LOW);
+  top_relays.digitalWrite(relay_shelf_light, LOW);
   Serial.println("Trying to Turn On light");
 
 }

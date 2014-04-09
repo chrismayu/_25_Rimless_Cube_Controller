@@ -24,7 +24,7 @@ void ATO(){ /// Main ATO Program Controller
     }
     else{
 
-      digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
+      bottom_relays.digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
     }
 
 
@@ -32,7 +32,7 @@ void ATO(){ /// Main ATO Program Controller
   }
   else{
 
-    digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
+    bottom_relays.digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
   }
 
 
@@ -60,7 +60,7 @@ void ATO2(){ /// Main ATO Program Controller
 
   Run_Pump_for_only_timer = 0.03;
 
-  if(digitalRead(ATO_Valve) == HIGH ){
+  if(bottom_relays.digitalRead(ATO_Valve) == HIGH ){
     pump_is_running = false;
 
   }
@@ -71,7 +71,7 @@ void ATO2(){ /// Main ATO Program Controller
   }
 
 
-  if(digitalRead(ATO_High) == HIGH ){
+  if(bottom_relays.digitalRead(ATO_High) == HIGH ){
 
 
 
@@ -88,7 +88,7 @@ void ATO2(){ /// Main ATO Program Controller
 
     current_status_of_water_level = false;
 
-    digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
+    bottom_relays.digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
 
     ATO_Run_Next_Time = LOW;
 
@@ -169,12 +169,12 @@ void ATO2(){ /// Main ATO Program Controller
 
     Serial.println("ATO Pump Running");
 
-    digitalWrite(ATO_Valve, LOW); //turn ON ATO Pump
+    bottom_relays.digitalWrite(ATO_Valve, LOW); //turn ON ATO Pump
 
   }
   else{
 
-    digitalWrite(ATO_Valve, HIGH); // Turn OFF Pump
+    bottom_relays.digitalWrite(ATO_Valve, HIGH); // Turn OFF Pump
 
   }
 
