@@ -44,7 +44,7 @@ void ATO(){ /// Main ATO Program Controller
 
 void ATO2(){ /// Main ATO Program Controller
 
-  Serial.print("-----  ATO Start ---------- ");
+//  Serial.print("-----  ATO Start ---------- ");
 
   //Delcarations
 
@@ -140,10 +140,10 @@ void ATO2(){ /// Main ATO Program Controller
 
       if(Watchman_timer_ATO_AT_timer >= Ato_okay_to_run_now){
 
-        Serial.println("Added Delay for watcher timer");
-        Serial.print("Watchman_timer_ATO_AT_timer ");
-        Serial.println(Watchman_timer_ATO_AT_timer);
-        Serial.println(" ");
+     //   Serial.println("Added Delay for watcher timer");
+      //  Serial.print("Watchman_timer_ATO_AT_timer ");
+      //  Serial.println(Watchman_timer_ATO_AT_timer);
+      //  Serial.println(" ");
 
         Ato_okay_to_run_now = Watchman_timer_ATO_AT_timer;
 
@@ -178,7 +178,7 @@ void ATO2(){ /// Main ATO Program Controller
 
   }
 
-
+/*
   Serial.print("ATO_Fault_Count: ");   
   Serial.println(ATO_Fault_Count);
 
@@ -221,7 +221,7 @@ void ATO2(){ /// Main ATO Program Controller
   Serial.print("-----  ATO END ---------- ");
 
 
-
+*/
 
 
 
