@@ -14,7 +14,7 @@ void Send_message_to_Reef_Sense(String Fault_Zone,String Fault_Alert ) {
 
 
 
-  bottom_relays.digitalWrite(Grounding_plug, HIGH); /// turn off grounding probe
+  digitalWrite(Grounding_plug, HIGH); /// turn off grounding probe
 
  delay(500);
 

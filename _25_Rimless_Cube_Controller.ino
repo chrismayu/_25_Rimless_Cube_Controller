@@ -16,6 +16,21 @@
  Analog Pin 1 = 
  Analog Pin 2 = //LCD POT Sensor
  
+ to be used :
+ Pin 0 = RX
+ Pin 1 = TX
+ Pin 2 = Alarm
+ Pin 3 = 
+ Pin 4 = buzzerPin
+ Pin 5 = MainPanelTempSensorPin 
+ Pin 6 = AmbientTempSenserPin
+ Pin 7 = TankTempSensorPin
+ Pin 8 = ChillerTempSensorPin
+ Pin 9 = MainPanelTempSensorPin,LightingPanelTempSensorPin,LightHeatSinkTempSensorPin,RefugeLightTempSensorPin 
+ Pin 10 = WhiteledLightPin
+ Pin 11 = BlueledLightPin
+ Pin 12 = MixedledLightPinwsWS
+ Pin 13 = Onboard LED
  
  Current:
  ---------  PWM  ------------
@@ -76,28 +91,38 @@
  Pin 31 = Top Relay # 1 - ATS PUMP
  Pin 20 = Top Relay # 2 - Refuge LIghts
  
- 
+ //38 - gfci
+ //39 - spare on termial block - ATO Float sensor
+ // 47 feeding -  orange wire  103
+ ///45 - ATO   100
+ // 44 - water change  101
+ // 43 reset 102
+ //   
+ // 42 -  //LCD Right PB
+ // 41 -  //LCD centerPB
+ // 40 -  IR
  
  // bottom
- //1 = Skimmer
- //2 =  ATO Pump
- //3 =  Power head
- //4 =   Reactor
- //5 =  Main Pump
- //6 =  Heater
- //7 =  Grounding Plug
- //8 =  Spare Rec - used for Jebco powerhead
+ //1 = 23
+ //2 = 22
+ //3 = 25
+ //4 = 24
+ //5 = 27
+ //6 = 26
+ //7 = 29
+ //8 = 28
  
  // top
- //1 = Refuge Lights 
- //2 = Shelf Light
- //3 =  
- //4 =  
- //5 =  
- //6 =  
- //7 =  
- //8 =  
+ //1 = 31  - ATS pump  
+ //2 = 30 - Refuge Lights
+ //3 = 33 - Mainlights
+ //4 = 32
+ //5 = 35
+ //6 = 34
+ //7 = 37
+ //8 = 36
  
+ /// no moon lighting code in project
  
  */
 
@@ -112,21 +137,8 @@
 #include <Streaming.h>
 #include <SPI.h>
 #include <Ethernet.h>
-<<<<<<< HEAD
-#include "PCF8574.h" // Required for PCF8575
-
-#define redchip 0x24 // Used on the Top Relays 
-#define yellowchip 0x21 // for Push Buttons
-#define greenchip 0x20 // Used on the Bottoms Relays
-
-/** PCF8575 instance */
-PCF8574 top_relays;
-PCF8574 bottom_relays;
-//PCF8574 buttons;
-=======
  
-#include <ChrisReefTank.h>
->>>>>>> FETCH_HEAD
+
 
 #define ROWS 4
 #define COLS 4
@@ -166,6 +178,32 @@ boolean lastConnected = false;                 // state of the connection last t
 const unsigned long postingInterval = 10*1000;  //delay between updates to pachube.com
 
 
+unsigned int interval;
+char buff[64];
+int pointer = 0;
+int temp_Current;
+int temp_Low;
+int temp_High;
+String heroku_code = "0";
+char heroku_data[128]; // this is the string to upload to heroku
+
+boolean found_status_200 = false;
+boolean found_session_id = false;
+boolean found_CSV = false;
+char *found;
+unsigned int successes = 0;
+unsigned int failures = 0;
+boolean ready_to_update = true;
+boolean reading_heroku = false;
+boolean request_pause = false;
+boolean found_content = false;
+unsigned long last_connect;
+
+
+int counterValue;
+
+char *firsthalf;
+char *secondhalf;
 
  
 #define TankTempSensorPin 5 
@@ -180,11 +218,12 @@ const unsigned long postingInterval = 10*1000;  //delay between updates to pachu
 #define mode102pb 39 //blue   Reset   //w/c
 #define mode103pb 50 //orange white   Feeding Mode    
 #define mode104pb 50  // not used
- 
+//47 feeding -  orange wire  103
+///45 - ATO   100
+// 44 - water change  101
+// 43 reset 102
 
 #define GCFI_Monitoring 40
-/*
-//Bottom
 #define ATO_Valve 23 
 #define Main_Pump 24
 #define Heater 26
@@ -192,56 +231,24 @@ const unsigned long postingInterval = 10*1000;  //delay between updates to pachu
 #define Chiller 50 //24
 #define PowerHead 22
 #define Skimmer 25
-
-*/
-
- // bottom
- //1 = Skimmer
- //2 =  ATO Pump
- //3 =  Power head
- //4 =   Reactor
- //5 =  Main Pump
- //6 =  Heater
- //7 =  Grounding Plug
- //8 =  Spare Rec - used for Jebco powerhead
-
-
-#define ATO_Valve 2
-#define Main_Pump 5
-#define Heater 6
-#define Reactor 4 
-#define PowerHead 3
-#define Skimmer 1
-#define Grounding_plug 7
-#define JeboPowerHead 8
- 
-
-#define RefugeLED 4 ///
-
+#define RefugeLED 31
 #define relayPin3 34
 #define relayPin4 37
 #define relayPin1 55//35
 #define relayPin2 36
 #define Grounding_plug 50
 #define Spare_Plug 50//26  // #6 plug ATS transformer
-<<<<<<< HEAD
-
-int relay_shelf_light = 5;   //30 working shelf light
+int relay_shelf_light = 30;   //30 working shelf light
 //int relay_Refuge = 31;      //31  working refuge light
 
 //1 = 31  - ATS pump  
 //2 = 30 - Refuge Lights
 //3 = 33 - Mainlights
 
-=======
-int relay_shelf_light = 30;   //30 working shelf light
- 
->>>>>>> FETCH_HEAD
  
 
 // Menu and Keypad
 byte menu = 1;
-<<<<<<< HEAD
 int keypadmode = 1;
 int Main_Screen = 1;
 int Temp_Screen = 2;
@@ -340,7 +347,7 @@ const float ATO_Master_Off = 21;
 int feedmode = 0;
 int feedmoderunning = 0;
 boolean feedmoderun = LOW;
-int feed_time = 15;  //Turn off power heads for this amount of time when feed mode button is pressed.
+int feed_time = 5;  //Turn off power heads for this amount of time when feed mode button is pressed.
 int pumps_off = -10; //placeholder  --don't change
 int skimmer_off = -10;  //placeholder ---don't change
 float skimmer_delay_start_time = 0;
@@ -352,7 +359,7 @@ float current_time = 0;
 int pumps_off_second, pumps_off_minute, pumps_on_minute, pumps_off_hour, pumps_on_second, pumps_on_hour, pumps_on, skimmer_on_hour, skimmer_on_minute, skimmer_on_second;
 int waterchangemoderunning = 0;
 int waterchangemode = 0;
-int WC_time = 35;  //Turn off power heads for this amount of time when feed mode button is pressed.
+int WC_time = 25;  //Turn off power heads for this amount of time when feed mode button is pressed.
 int WC_OFF = -10; //placeholder  --don't change
 int WC_off_second, WC_off_minute, WC_on_minute, WC_off_hour, WC_on_second, WC_on_hour, WC_on;
 char Last_Feeding[20] = "    ??????       "; // for small //LCD
@@ -445,13 +452,6 @@ float light_shelf_delay_time = 0.02;  //5 minute start up delay
 boolean light_shelf_delay_bool = true;
 boolean light_shelf_is_on = false;
 boolean turn_on_light_shelf = false;
-=======
- 
-
-
-
- 
->>>>>>> FETCH_HEAD
 
 
 // clock variables
@@ -464,6 +464,51 @@ byte curHour;
 byte oldHour;
 
  
+// PH and ORP stamp
+int orpValue = 0;
+char PHtext[20];
+int PHerror;
+boolean PH_Problem_message_sent = false;
+char PH_Temp_data[15]; 
+
+
+const float pHMax = 6.90;
+const float pHMin = 6.50;
+const float pHMaxAlarm = 8.5;
+const float pHMinAlarm = 7.3;
+float pHCalibrationValue = -0.18;// -0.18  Jan 8 2011 with real PH Buffer 7
+float pHValue = 0.0;
+float calPHValue = 0.0;
+const int eeAddrPHCal = 5;
+float PH_heroku_AVG;
+float hourlastsent;
+
+
+//// heroku 
+
+//char heroku_data[128]; // this is the string to upload to heroku
+
+float tempF_heroku;
+float tempF2_heroku;
+int Tanktemp_first_heroku;
+int Tanktemp_second_heroku;
+
+float PH_heroku;
+float PH2_heroku;
+int TankPH_first_heroku;
+int TankPH_second_heroku;
+
+boolean temps_up = false;
+
+float Ambient_tempF_heroku;
+float Ambient_tempF2_heroku;
+int Ambienttemp_first_heroku;
+int Ambienttemp_second_heroku;
+float AmbienttempC_Avg;
+
+boolean Maintain_connection_sent = false;
+char herokutext[20];
+boolean last_connection_sent = false;
 
 /// Main Tank Temp---------
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
@@ -472,7 +517,19 @@ OneWire oneWire(TankTempSensorPin);
 DallasTemperature TankSensor(&oneWire);
 // arrays to hold device address
 DeviceAddress TankThermometer;
- 
+float TanktempC;
+float TanktempC_Avg;
+float TanktempF;
+float MTTEMPMAX = 90;
+float MTTEMPMIN = 67;
+/// Tank Temp Monitoring
+int Tank_low_temp = 8900; // Send Message Tank at this temp
+int Tank_high_temp = 84; // Send Message Tank at this temp
+int Tank_TC; // Temp sensor mounted in the Tank
+int Whole, Fract, High, Low; // Display High and Low
+float  Main_Tank_High = 3;//history - 
+float  Main_Tank_Low = 300;
+boolean Main_Tank_Over_temp_message_sent = false;
 
 
 /// Ambient Temp---------
@@ -482,8 +539,55 @@ OneWire oneWire_Ambient(AmbientTempSenserPin);
 DallasTemperature AmbientSensor(&oneWire_Ambient);
 // arrays to hold device address
 DeviceAddress AmbientThermometer;
+float AmbienttempC;
+float AmbienttempF;
+float AmbientTEMPMAX = 90;
+float AmbientTEMPMIN = 67;
+/// Tank Temp Monitoring
+int Ambient_low_temp = 8900; // Send Message Tank at this temp
+int Ambient_high_temp = 8900; // Send Message Tank at this temp
+int Ambient_TC; // Temp sensor mounted in the Tank
+int AmbientWhole, AmbientFract, AmbientHigh, AmbientLow; // Display High and Low
+float  Ambient_High = 3;//history - 
+float  Ambient_Low = 300;
+float Ambient_tempF_heroku_2;
+float Tank_tempF_heroku_2;
+
+
+  
+  
+
+// Ambient Temp Averaging
+const int Ambient_Temp_Avg_numReadings = 15;
+int Ambient_Temp_Avg_readings[Ambient_Temp_Avg_numReadings];      // the readings from the analog input
+int Ambient_Temp_Avg_index = 0;                  // the index of the current reading
+int  Ambient_Temp_Avg_total = 0;                  // the running total
+float  Ambient_Temp_Avg_average = 0;   
+int Ambient_Temp_Avg_index_2 = 0; // the average 
+
+// Tank Temp Averaging 
+const int Tank_Temp_Avg_numReadings = 2;
+int Tank_Temp_Avg_readings[Tank_Temp_Avg_numReadings];      // the readings from the analog input
+int Tank_Temp_Avg_index = 0;                  // the index of the current reading
+int Tank_Temp_Avg_total = 0;                  // the running total
+float Tank_Temp_Avg_average = 0;                // the average
+int Tank_Temp_Avg_index_2 = 0; 
+
+// PH Averaging 
+const int PH_Avg_numReadings = 4;
+int PH_Avg_readings[PH_Avg_numReadings];      // the readings from the analog input
+int PH_Avg_index = 0;                  // the index of the current reading
+int  PH_Avg_total = 0;                  // the running total
+float PH_Avg_average = 0; 
+int PH_Avg_index_2 = 0;  // the average
+
+
+
+
  
- 
+
+
+
 ///// --------------------------VOID SETUP ------------------------------------------------------------------------------------------
 
 void setup() {
@@ -514,11 +618,7 @@ void setup() {
   //Buzzer
  // pinMode(buzzerPin, OUTPUT);
 
-bottom_relays.digitalWrite(0, LOW); // Turn off led 2
-
   // Relays
-  
-  /*
   pinMode(ATO_Valve, OUTPUT);
   
   pinMode(Main_Pump, OUTPUT);
@@ -531,107 +631,31 @@ bottom_relays.digitalWrite(0, LOW); // Turn off led 2
   pinMode(Skimmer, OUTPUT);
   pinMode(Grounding_plug, OUTPUT);
   digitalWrite(Grounding_plug, HIGH);//was low 
- */
+ 
   pinMode(relayPin1, OUTPUT);
   pinMode(relayPin2, OUTPUT);
   pinMode(relayPin3, OUTPUT);
   pinMode(relayPin4, OUTPUT);
  
- 
-   /* Start I2C bus and PCF8574 instance */
-  //top_relays.begin(0x21);
-  top_relays.begin(yellowchip);
-  bottom_relays.begin(redchip);
- // buttons.begin(greenchip);
-
- 
-  
-  /* Setup some PCF8575 pins for demo */
-  top_relays.pinMode(0, OUTPUT);
-  top_relays.pinMode(1, OUTPUT);
-  top_relays.pinMode(2, OUTPUT);
-  top_relays.pinMode(3, OUTPUT);
-  top_relays.pinMode(4, OUTPUT);
-  top_relays.pinMode(5, OUTPUT);
-  top_relays.pinMode(6, OUTPUT);
-  top_relays.pinMode(7, OUTPUT);
-  
-    /* Setup some PCF8575 pins for demo */
-  bottom_relays.pinMode(0, OUTPUT);
-  bottom_relays.pinMode(1, OUTPUT);
-  bottom_relays.pinMode(2, OUTPUT);
-  bottom_relays.pinMode(3, OUTPUT);
-  bottom_relays.pinMode(4, OUTPUT);
-  bottom_relays.pinMode(5, OUTPUT);
-  bottom_relays.pinMode(6, OUTPUT);
-  bottom_relays.pinMode(7, OUTPUT);
-  
-    /* Setup some PCF8575 pins for demo 
-  buttons.pinMode(0, INPUT_PULLUP);
-  buttons.pinMode(1, INPUT_PULLUP);
-  buttons.pinMode(2, INPUT_PULLUP);
-  buttons.pinMode(3, INPUT_PULLUP);
-  buttons.pinMode(4, INPUT_PULLUP);
-  buttons.pinMode(5, INPUT_PULLUP);
-  buttons.pinMode(6, INPUT_PULLUP);
-  buttons.pinMode(7, INPUT_PULLUP);
-  */
-  
-  
-  top_relays.digitalWrite(0, HIGH); 
-  top_relays.digitalWrite(1, HIGH); 
-  top_relays.digitalWrite(2, HIGH); 
-  top_relays.digitalWrite(3, HIGH); 
-  top_relays.digitalWrite(4, HIGH); 
-  top_relays.digitalWrite(5, HIGH); 
-  top_relays.digitalWrite(6, HIGH); 
-  top_relays.digitalWrite(7, HIGH); 
-  
-  bottom_relays.digitalWrite(0, HIGH); 
-  bottom_relays.digitalWrite(1, HIGH); 
-  bottom_relays.digitalWrite(2, HIGH); 
-  bottom_relays.digitalWrite(3, HIGH); 
-  bottom_relays.digitalWrite(4, HIGH); 
-  bottom_relays.digitalWrite(5, HIGH); 
-  bottom_relays.digitalWrite(6, HIGH);
-  bottom_relays.digitalWrite(7, HIGH);  
- 
- 
 
  //  digitalWrite(relay_Refuge, LOW); // Refuge light
-  top_relays.digitalWrite(relay_shelf_light, HIGH); // Shelf  light
-  top_relays.digitalWrite(RefugeLED, HIGH);
-  
- // bottom
- //1 = Skimmer
- //2 =  ATO Pump
- //3 =  Power head
- //4 =   Reactor
- //5 =  Main Pump
- //6 =  Heater
- //7 =  Grounding Plug
- //8 =  Spare Rec - used for Jebco powerhead
+  digitalWrite(relay_shelf_light, HIGH); // Shelf  light
+
+
 
   // relay default value
-  bottom_relays.digitalWrite(Skimmer, HIGH);
-  bottom_relays.digitalWrite(ATO_Valve, HIGH);
-  bottom_relays.digitalWrite(PowerHead, LOW);
-  bottom_relays.digitalWrite(JeboPowerHead, LOW);
-   
-  bottom_relays.digitalWrite(Reactor, LOW);
- 
-  bottom_relays.digitalWrite(Main_Pump, LOW);
-  bottom_relays.digitalWrite(Heater, LOW);
-  
-  
-  
+  digitalWrite(Reactor, LOW);
+  digitalWrite(Skimmer, HIGH);
+  digitalWrite(ATO_Valve, HIGH);
+  digitalWrite(Main_Pump, LOW);
+  digitalWrite(RefugeLED, HIGH);
   digitalWrite(relayPin1, HIGH);
   digitalWrite(relayPin2, HIGH);
   digitalWrite(relayPin3, HIGH);
   digitalWrite(relayPin4, HIGH);
-  
- 
-  
+  digitalWrite(Heater, LOW);
+  digitalWrite(Chiller, HIGH); 
+  digitalWrite(PowerHead, LOW); 
   
   // start clock
   RTC.getRAM(54, (uint8_t *)&TimeIsSet, sizeof(uint16_t));
@@ -801,7 +825,8 @@ current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second /
   RunFugelight();
 //  Serial.println("Print Heater");
    printHeater();
- 
+//  Serial.println("Print Chiller");
+  printChiller();
  
  
 //  Serial.println("Feeding Mode");
@@ -852,14 +877,14 @@ current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second /
 void Skimmer_Controller(){
   
  float current_time  = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
- //float turn_on_skimmer_when;
+ float turn_on_skimmer_when;
  
    if (skimmer_delay_bool == true ){
-//turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
+turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
    }
  
   if(waterchangemode == 1 || waterchangemoderunning == 1 || feedmoderunning == 1){
-      // skimmer_delay_bool = true;
+       skimmer_delay_bool = true;
        
        } 
  
@@ -869,7 +894,8 @@ void Skimmer_Controller(){
    
      
        if(waterchangemode == 1 || waterchangemoderunning == 1 || feedmoderunning == 1){
-
+       
+       
        }else{
          set_Skimmer_output_to = true; 
          skimmer_delay_bool = false; 
@@ -882,26 +908,6 @@ void Skimmer_Controller(){
  
  }
  
- 
- if (skimmer_delay_bool == true ){
-
- 
- Serial.print("skimmer_delay_bool");
-  Serial.println(skimmer_delay_bool);
-  
-   Serial.print("set_Skimmer_output_to");
-    Serial.println(set_Skimmer_output_to);
-    
-     Serial.print("turn_on_skimmer_when");
-  Serial.println(turn_on_skimmer_when);
-  
-   Serial.print("current_time");
-    Serial.println(current_time);
- 
- 
-    Serial.print("skimmer_delay_time");
-    Serial.println(skimmer_delay_time);
- }
   
 }
 
@@ -933,7 +939,20 @@ void printDate()
     hour12 = RTC.hour;
     sprintf(text, "  %02d:%02d:%02d:AM", hour12, RTC.minute, RTC.second);
   }
- 
+  ////LCDsmall.setCursor(0, 1);
+  ////LCDsmall.print(text); 
+
+  //sprintf(text, "Time: %02d:%02d:%02d :AM", hour12, RTC.minute, RTC.second);
+  if(keypadmode == 1 || keypadmode == 3){
+    //LCD.setCursor(0, 7);
+    //LCD.print(text);
+  }
+
+  if(keypadmode == Refuge_System_Screen){
+    //LCD.setCursor(0, 2);
+    //LCD.print(text);
+  }
+  // Serial.println(text);
 }
 
 
@@ -1006,7 +1025,6 @@ void printHeater()
   
 }
 
-<<<<<<< HEAD
 
 ///-------------------Fan/Chiller control--------------------------------------
 void printChiller()
@@ -1044,7 +1062,12 @@ void printChiller()
   }
   if(keypadmode == Temp_Screen){
     //LCD.GotoXY(0,7);           
-    
+    if(digitalRead(Chiller) == LOW){
+      //LCD.print("Chiller : ON ");
+    }
+    else{
+      //LCD.print("Chiller : Off");
+    }
   }
   if(keypadmode == Chiller_Screen){
     //LCD.setCursor(0, 2);
@@ -1062,16 +1085,54 @@ void printChiller()
 
     //LCD.print(Chiller_off_temp);
     //LCD.GotoXY(0,7); 
-    
+    if(digitalRead(Chiller) == LOW){
+      //LCD.print("Chiller: ON ");
+    }
+    else{
+      //LCD.print("Chiller: Off");
+    }
   }
-=======
->>>>>>> FETCH_HEAD
- 
- 
  
 
-void WaterChangeMode(){
+}
+
  
+void ClearAlarmMessage()
+{
+  //LCD.setCursor(0, 3);
+  //LCD.print("                    "); 
+}
+
+ 
+void Buzzer(int targetPin, long frequency, long length) {
+  long delayValue = 1000000/frequency/2; // calculate the delay value between transitions
+  // 1 second's worth of microseconds, divided by the frequency, then split in half since
+  // there are two phases to each cycle
+  long numCycles = frequency * length/ 1000; // calculate the number of cycles for proper timing
+  // multiply frequency, which is really cycles per second, by the number of seconds to 
+  // get the total number of cycles to produce
+  for (long i=0; i < numCycles; i++){ // for the calculated length of time...
+    digitalWrite(targetPin,HIGH); // write the buzzer pin high to push out the diaphram
+    delayMicroseconds(delayValue); // wait for the calculated delay value
+    digitalWrite(targetPin,LOW); // write the buzzer pin low to pull back the diaphram
+    delayMicroseconds(delayValue); // wait againf or the calculated delay value
+  }
+}
+
+
+void WaterChangeMode(){
+
+  if(small_LCD_Screen == S_L_Last_WaterChange_Screen){
+
+    //LCDsmall.setCursor(0, 1);
+    //LCDsmall.print("W/C:");
+    //LCDsmall. print(Last_WaterChange);
+  }
+
+
+
+
+
 
   if(waterchangemode == 1 || waterchangemoderunning == 1 ){
     /// WaterChange mode running
@@ -1082,11 +1143,11 @@ void WaterChangeMode(){
     set_mainpump_output_to = false;  
    // Turn Skimmer Off 
    set_Skimmer_output_to = false; 
-    skimmer_delay_bool = false; 
-   
     // Turn powerhead Off       
     set_powerhead_output_to = false;    
- 
+
+    
+
     waterchangemoderunning = 1;
     feedmode = 3;
 
@@ -1100,16 +1161,31 @@ void WaterChangeMode(){
       // Turn mainpump On      
       set_mainpump_output_to = true;  
       //Turn Skimmer On
-     // set_Skimmer_output_to = true; 
+      set_Skimmer_output_to = true; 
  
       
     }
-    
+
     // Turn powerhead On       
     set_powerhead_output_to = true;       
     
   }
   waterchangemode = 0;   
+
+
+
+  if(waterchangemoderunning == 1 ){
+
+    if(keypadmode == Main_Screen){ 
+      //LCD.GotoXY(0,6);
+      //LCD.print("W/C Mode Active");
+    } 
+    if(keypadmode == Pump_Control_Screen){ 
+      //LCD.GotoXY(0,6);
+      //LCD.print("W/C Mode Active");
+    } 
+  }
+
  
 }
 
@@ -1117,12 +1193,39 @@ void FeedingMode(){
 
   //Pump mode 4 
   //Feed Mode Settings mode 10
- 
+  if(keypadmode == Pump_Control_Screen){ 
+    //LCD.GotoXY(0,6);
+    //LCD.print("Feeding Mode:");
+  }
+
+
+  if(keypadmode == Feed_Mode_Screen){ 
+    //LCD.GotoXY(0,6);
+    //LCD.print("Feeding Mode:");
+  }
+
+
+
+  if(small_LCD_Screen == S_L_Last_Feeding_Screen){
+
+    //LCDsmall.setCursor(0, 1);
+    //LCDsmall.print("Feed:");
+    //LCDsmall. print(Last_Feeding);
+  }
+
+
   if(feedmode == 1){ 
     Serial.print("feeding mode active");
- 
+
+
     sprintf(Last_Feeding, "%02d/%02d %02d:%02d", RTC.month, RTC.day, RTC.hour, RTC.minute);
- 
+
+    if(keypadmode == Main_Screen){ 
+      //LCD.GotoXY(0,6);
+      //LCD.print("FeedMode:Active");
+    }
+
+
     // if(feedmode == 1 && digitalRead(Main_Pump) == HIGH){
     pumps_off = 10;
 
@@ -1144,27 +1247,37 @@ void FeedingMode(){
 
   if(feedmode == 3 && feedmoderunning == 1){
     pumps_off = -10; // turns off feeding mode
- 
+
+    if(keypadmode == Feed_Mode_Screen || keypadmode == Pump_Control_Screen){ 
+      //LCD.GotoXY(0,6);
+      //LCD.print("             ");
+    }
+
+
+
+    if(keypadmode == Main_Screen){ 
+      //LCD.GotoXY(0,6);
+      //LCD.print("               ");
+    }
   }
 
   if((pumps_on_hour == RTC.hour  && pumps_on_minute == RTC.minute  && pumps_on_second <= RTC.second) || pumps_off == -10){
 
     if(waterchangemode == 1 || waterchangemoderunning == 1 ){
-       
     }
     else{
       // Turn mainpump On     
       set_mainpump_output_to = true;  
-     // set_Skimmer_output_to = true; 
+      set_Skimmer_output_to = true; 
   
   if (skimmer_delay_bool == false && set_Skimmer_output_to == false){
    skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
   skimmer_delay_bool = true;
   skimmer_delay_time = 0.45;
-  turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
-    Serial.println("setting time in Feeding Mode**********************************************************************");
+    Serial.println("setting time in Feeding Mode");
   
     }
+      
     }
     feedmoderunning = 0;
     pumps_off = -10;
@@ -1175,13 +1288,16 @@ void FeedingMode(){
 
     if(waterchangemode == 1 || waterchangemoderunning == 1 || ATOmoderun == HIGH){
 
+
+
+
     }
     else{
       // Turn mainpump Off    
       set_mainpump_output_to = false;
-       set_Skimmer_output_to = false; 
-       skimmer_delay_bool = false; 
-       
+       set_Skimmer_output_to = false;  
+      
+
     }
     feedmoderun = HIGH;
     feedmoderunning = 1;
@@ -1207,8 +1323,22 @@ void FeedingMode(){
     pumps_off_minute = pumps_off_second / 60;
 
     if(pumps_off_minute < 10){
- 
- 
+      if(keypadmode == Pump_Control_Screen || keypadmode == Feed_Mode_Screen){ 
+        //LCD.print(" ");
+      }
+    }
+    if(keypadmode == Pump_Control_Screen || keypadmode == Feed_Mode_Screen){ 
+      //LCD.print(pumps_off_minute);  //minutes until pumps turn on 
+      //LCD.print(":"); 
+    }
+    if(pumps_off_second % 60 < 10){
+      if(keypadmode == Pump_Control_Screen || keypadmode == Feed_Mode_Screen){ 
+        //LCD.print("0");
+      } 
+    }
+    if(keypadmode == Pump_Control_Screen || keypadmode == Feed_Mode_Screen){ 
+      //LCD.print(pumps_off_second % 60);  //seconds until pumps turn on 
+    }
 
   }
   else{
@@ -1231,7 +1361,7 @@ void FeedingMode(){
 
  
 
-  }
+
 
   
 void outputs(){
@@ -1239,46 +1369,44 @@ void outputs(){
   // Heater Control
   if (set_Heater_output_to == true && disableheater == false ){
 
-    bottom_relays.digitalWrite(Heater, LOW);
+    digitalWrite(Heater, LOW);
   }
   else{
-    bottom_relays.digitalWrite(Heater, HIGH);
+    digitalWrite(Heater, HIGH);
   }
   // Main Pump Control
 
   if (set_mainpump_output_to == true && disablemainpump == false){
 
-   bottom_relays.digitalWrite(Main_Pump, LOW);
+    digitalWrite(Main_Pump, LOW);
   }
   else{
-   bottom_relays.digitalWrite(Main_Pump, HIGH);
+    digitalWrite(Main_Pump, HIGH);
   }
   // PowerHead Control
   if (set_powerhead_output_to == true && disablepowerhead == false){
 
-    bottom_relays.digitalWrite(PowerHead, LOW);
-    bottom_relays.digitalWrite(JeboPowerHead, LOW);
+    digitalWrite(PowerHead, LOW);
   }
   else{
-    bottom_relays.digitalWrite(PowerHead, HIGH);
-    bottom_relays.digitalWrite(JeboPowerHead, LOW);
+    digitalWrite(PowerHead, HIGH);
   }
   // Chiller Control
   if (set_chiller_output_to == true && disablechiller == false){
 
-  //  digitalWrite(Chiller, LOW);
+    digitalWrite(Chiller, LOW);
   }
   else{
-  //  digitalWrite(Chiller, HIGH);
+    digitalWrite(Chiller, HIGH);
   }
   
   // Refuge light Control
   if (set_refugelight_output_to == true && disablerefugelight == false){
 
-   top_relays.digitalWrite(RefugeLED, LOW);
+    digitalWrite(RefugeLED, LOW);
   }
   else{
-    top_relays.digitalWrite(RefugeLED, HIGH);
+    digitalWrite(RefugeLED, HIGH);
   }
 
 
@@ -1286,10 +1414,10 @@ void outputs(){
   // Skimmer Control
   if (set_Skimmer_output_to == true && disableSkimmer == false ){
 
-    bottom_relays.digitalWrite(Skimmer, LOW);
+    digitalWrite(Skimmer, LOW);
   }
   else{
-    bottom_relays.digitalWrite(Skimmer, HIGH);
+    digitalWrite(Skimmer, HIGH);
   }
 
 

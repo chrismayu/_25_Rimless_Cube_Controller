@@ -53,7 +53,7 @@ void Light_shelf_Controller(){
  
   float turn_off_light_shelf_when;
  
-  if( top_relays.digitalRead(relay_shelf_light) == LOW && light_shelf_is_on == false){
+  if(digitalRead(relay_shelf_light) == LOW && light_shelf_is_on == false){
 
     light_shelf_is_on = true;
 
@@ -68,7 +68,7 @@ void Light_shelf_Controller(){
   }
 
  
-  if( top_relays.digitalRead(relay_shelf_light) == HIGH ){
+  if(digitalRead(relay_shelf_light) == HIGH ){
 
     light_shelf_is_on = false;
 
@@ -93,9 +93,9 @@ void Light_shelf_Controller(){
  
       // set_light_shelf_output_to = true;
 
-   //    Serial.println("Turning Off light");
+       Serial.println("Turning Off light");
 
-      top_relays.digitalWrite(relay_shelf_light, HIGH);
+      digitalWrite(relay_shelf_light, HIGH);
 
       light_shelf_delay_bool = false;
  
@@ -105,26 +105,22 @@ void Light_shelf_Controller(){
   } 
   else{
  
-//    Serial.println("Turning On light");
+    Serial.println("Turning On light");
 
-    top_relays.digitalWrite(relay_shelf_light, LOW);
+    digitalWrite(relay_shelf_light, LOW);
  
   }
  
  
-   if( top_relays.digitalRead(relay_shelf_light) == LOW ){
+   if(digitalRead(relay_shelf_light) == LOW ){
 
-  //   Serial.print("-----  LIGHT START ---------- ");
+     Serial.print("-----  LIGHT START ---------- ");
 
  
 
- /*
+ 
    Serial.print("relay_shelf_light out status: ");   
-<<<<<<< HEAD
-   Serial.println( top_relays.digitalRead(relay_shelf_light));
-=======
-  Serial.println(digitalRead(relay_shelf_light));
->>>>>>> FETCH_HEAD
+   Serial.println(digitalRead(relay_shelf_light));
    
    Serial.print("turn_off_light_shelf_when ");
    Serial.println(turn_off_light_shelf_when);
@@ -154,7 +150,7 @@ void Light_shelf_Controller(){
    Serial.print(" ");
    
    Serial.print("-----  LIGHT END ---------- ");
- */
+ 
    }
  
 }
@@ -168,7 +164,7 @@ void Light_shelf_Controller(){
 void turn_on_shelf_light(){
 
   turn_on_light_shelf = true;
-  top_relays.digitalWrite(relay_shelf_light, LOW);
+  digitalWrite(relay_shelf_light, LOW);
   Serial.println("Trying to Turn On light");
 
 }
