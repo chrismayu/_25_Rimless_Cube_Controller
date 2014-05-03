@@ -138,6 +138,22 @@
 #include <SPI.h>
 #include <Ethernet.h>
  
+ 
+#include "PCF8574.h" // Required for PCF8574
+
+#define redchip 0x24 // Used on the Top Relays 
+#define yellowchip 0x21 // for Push Buttons
+#define greenchip 0x20 // Used on the Bottoms Relays
+
+
+#define pinkchip 0x22 // Used on the Top Relays
+#define sparklechip 0x23 // for Push Buttons
+#define greychip 0x25 // Used on the Bottoms Relays
+
+/** PCF8575 instance */
+PCF8574 top_relays;
+PCF8574 bottom_relays;
+PCF8574 buttons;
 
 
 #define ROWS 4
@@ -145,6 +161,9 @@
 
 #define PCF8574_ADDR 0x38
  
+#define DEBUG_ATO 0
+#define DEBUG_Refuge 0
+#define DEBUG_Shelf_light 0
 
  
 //#define DEBUG
@@ -206,44 +225,44 @@ char *firsthalf;
 char *secondhalf;
 
  
-#define TankTempSensorPin 5 
-#define AmbientTempSenserPin 6
+#define TankTempSensorPin 2
+#define AmbientTempSenserPin 3
 #define ledTestPin 13
-#define ATO_High 44
+
+
+// Buttons
+#define ATO_Water_is_High 7
+#define mode99pb 50  // not used 
+#define Shelf_Light_PB 1// shelf light
+#define Feeding_Mode_PB 2 // Feeding Mode
+#define WaterChange_Mode_PB 3 //WaterChange Mode
+#define GCFI_Monitoring 4
+#define mode103pb 50 //
+#define mode104pb 50  // not used
  
 
-#define mode99pb 50  // not used 
-#define mode100pb 38// shelf light
-#define mode101pb 41 //blue white   WC Button    .// ato
-#define mode102pb 39 //blue   Reset   //w/c
-#define mode103pb 50 //orange white   Feeding Mode    
-#define mode104pb 50  // not used
-//47 feeding -  orange wire  103
-///45 - ATO   100
-// 44 - water change  101
-// 43 reset 102
+#define ATO_Valve 1
+#define Main_Pump 4
+#define Heater 5
+#define Reactor 3
+#define PowerHead 2
+#define Skimmer 0
+#define Grounding_plug 6
+#define JeboPowerHead 7
+ 
 
-#define GCFI_Monitoring 40
-#define ATO_Valve 23 
-#define Main_Pump 24
-#define Heater 26
-#define Reactor 27 
-#define Chiller 50 //24
-#define PowerHead 22
-#define Skimmer 25
-#define RefugeLED 31
+#define RefugeLED 0 ///
+int relay_shelf_light = 3;   //30 working shelf light
+
+
+
 #define relayPin3 34
 #define relayPin4 37
 #define relayPin1 55//35
 #define relayPin2 36
 #define Grounding_plug 50
 #define Spare_Plug 50//26  // #6 plug ATS transformer
-int relay_shelf_light = 30;   //30 working shelf light
-//int relay_Refuge = 31;      //31  working refuge light
 
-//1 = 31  - ATS pump  
-//2 = 30 - Refuge Lights
-//3 = 33 - Mainlights
 
  
 
@@ -597,28 +616,41 @@ void setup() {
   // give the ethernet module time to boot up:
 
 
-  // ATO
-  pinMode(ATO_High, INPUT);
-  
+Serial.print("starting up");
+ 
   //
-    pinMode(relay_shelf_light, OUTPUT);
+   // pinMode(relay_shelf_light, OUTPUT);
 //  pinMode(relay_Refuge, OUTPUT); 
+ 
+ /* now used in the yellow Chipped PCF8574 
+ 
+  // ATO
+  pinMode(ATO_Water_is_High, INPUT);
+  
  
   // Push Buttons
   pinMode(mode99pb, INPUT);
-  pinMode(mode100pb, INPUT);
-  pinMode(mode101pb, INPUT);
-  pinMode(mode102pb, INPUT);
+  pinMode(Shelf_Light_PB, INPUT);
+  pinMode(Feeding_Mode_PB, INPUT);
+  pinMode(WaterChange_Mode_PB, INPUT);
   pinMode(mode103pb, INPUT);
   pinMode(mode104pb, INPUT);
   pinMode(GCFI_Monitoring, INPUT);
+  
+  */
+  
+  
   //LED on Arduino Board
   pinMode(ledTestPin, OUTPUT);  //we'll use the debug LED to output a heartbeat
 
   //Buzzer
  // pinMode(buzzerPin, OUTPUT);
 
+//bottom_relays.digitalWrite(0, LOW); // Turn off led 2
+
   // Relays
+  
+  /*
   pinMode(ATO_Valve, OUTPUT);
   
   pinMode(Main_Pump, OUTPUT);
@@ -631,31 +663,127 @@ void setup() {
   pinMode(Skimmer, OUTPUT);
   pinMode(Grounding_plug, OUTPUT);
   digitalWrite(Grounding_plug, HIGH);//was low 
- 
+ */
   pinMode(relayPin1, OUTPUT);
   pinMode(relayPin2, OUTPUT);
   pinMode(relayPin3, OUTPUT);
   pinMode(relayPin4, OUTPUT);
  
+ Serial.print("1");
+   /* Start I2C bus and PCF8574 instance */
+  //top_relays.begin(0x21);
+  
+ 
+   Serial.print("red");
+  top_relays.begin(redchip);
+   Serial.print("green");
+  bottom_relays.begin(greenchip);
+ 
+   
+  
+    
+ //  Serial.print("grey");
+ // top_relays.begin(greychip);
+ //  Serial.print("sparkle");
+ // bottom_relays.begin(sparklechip);
+   Serial.print("pink");
+  buttons.begin(pinkchip);
+ 
+  
+  
+  
+ 
+  
+  
+
+  Serial.print("1a");
+  
+  /* Setup some PCF8575 pins for demo */
+  top_relays.pinMode(0, OUTPUT);
+  top_relays.pinMode(1, OUTPUT);
+  top_relays.pinMode(2, OUTPUT);
+  top_relays.pinMode(3, OUTPUT);
+  top_relays.pinMode(4, OUTPUT);
+  top_relays.pinMode(5, OUTPUT);
+  top_relays.pinMode(6, OUTPUT);
+  top_relays.pinMode(7, OUTPUT);
+  
+    /* Setup some PCF8575 pins for demo */
+  bottom_relays.pinMode(0, OUTPUT);
+  bottom_relays.pinMode(1, OUTPUT);
+  bottom_relays.pinMode(2, OUTPUT);
+  bottom_relays.pinMode(3, OUTPUT);
+  bottom_relays.pinMode(4, OUTPUT);
+  bottom_relays.pinMode(5, OUTPUT);
+  bottom_relays.pinMode(6, OUTPUT);
+  bottom_relays.pinMode(7, OUTPUT);
+  
+    // Setup some PCF8575 pins for demo 
+  buttons.pinMode(0, INPUT_PULLUP);
+  buttons.pinMode(1, INPUT_PULLUP);
+  buttons.pinMode(2, INPUT_PULLUP);
+  buttons.pinMode(3, INPUT_PULLUP);
+  buttons.pinMode(4, INPUT_PULLUP);
+  buttons.pinMode(5, INPUT_PULLUP);
+  buttons.pinMode(6, INPUT_PULLUP);
+  buttons.pinMode(7, INPUT_PULLUP);
+  
+  
+  
+  top_relays.digitalWrite(0, HIGH); 
+  top_relays.digitalWrite(1, HIGH); 
+  top_relays.digitalWrite(2, HIGH); 
+  top_relays.digitalWrite(3, HIGH); 
+  top_relays.digitalWrite(4, HIGH); 
+  top_relays.digitalWrite(5, HIGH); 
+  top_relays.digitalWrite(6, HIGH); 
+  top_relays.digitalWrite(7, HIGH); 
+  
+  bottom_relays.digitalWrite(0, HIGH); 
+  bottom_relays.digitalWrite(1, HIGH); 
+  bottom_relays.digitalWrite(2, HIGH); 
+  bottom_relays.digitalWrite(3, HIGH); 
+  bottom_relays.digitalWrite(4, HIGH); 
+  bottom_relays.digitalWrite(5, HIGH); 
+  bottom_relays.digitalWrite(6, HIGH);
+  bottom_relays.digitalWrite(7, HIGH);  
+ 
+ 
 
  //  digitalWrite(relay_Refuge, LOW); // Refuge light
-  digitalWrite(relay_shelf_light, HIGH); // Shelf  light
-
-
+  top_relays.digitalWrite(relay_shelf_light, HIGH); // Shelf  light
+  top_relays.digitalWrite(RefugeLED, HIGH);
+  
+ // bottom
+ //1 = Skimmer
+ //2 =  ATO Pump
+ //3 =  Power head
+ //4 =   Reactor
+ //5 =  Main Pump
+ //6 =  Heater
+ //7 =  Grounding Plug
+ //8 =  Spare Rec - used for Jebco powerhead
 
   // relay default value
-  digitalWrite(Reactor, LOW);
-  digitalWrite(Skimmer, HIGH);
-  digitalWrite(ATO_Valve, HIGH);
-  digitalWrite(Main_Pump, LOW);
-  digitalWrite(RefugeLED, HIGH);
+  bottom_relays.digitalWrite(Skimmer, HIGH);
+  bottom_relays.digitalWrite(ATO_Valve, HIGH);
+  bottom_relays.digitalWrite(PowerHead, LOW);
+  bottom_relays.digitalWrite(JeboPowerHead, LOW);
+   
+  bottom_relays.digitalWrite(Reactor, LOW);
+ 
+  bottom_relays.digitalWrite(Main_Pump, LOW);
+  bottom_relays.digitalWrite(Heater, LOW);
+  
+  
+  
   digitalWrite(relayPin1, HIGH);
   digitalWrite(relayPin2, HIGH);
   digitalWrite(relayPin3, HIGH);
   digitalWrite(relayPin4, HIGH);
-  digitalWrite(Heater, LOW);
-  digitalWrite(Chiller, HIGH); 
-  digitalWrite(PowerHead, LOW); 
+  
+ 
+  Serial.print("2");
   
   // start clock
   RTC.getRAM(54, (uint8_t *)&TimeIsSet, sizeof(uint16_t));
@@ -826,7 +954,7 @@ current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second /
 //  Serial.println("Print Heater");
    printHeater();
 //  Serial.println("Print Chiller");
-  printChiller();
+ 
  
  
 //  Serial.println("Feeding Mode");
@@ -1025,76 +1153,7 @@ void printHeater()
   
 }
 
-
-///-------------------Fan/Chiller control--------------------------------------
-void printChiller()
-{
-  //Serial.println("*****  Chiller area *****");
-  float Tank_tempF =(DallasTemperature::toFahrenheit(TanktempC)); // Converts TanktempC to Fahrenheit
-
-  ///  put heater cut off here
-  //Serial.println(Tank_tempF);
-  //Serial.println(Chiller_on_temp);
-
-  int tank_tempf =  Tank_tempF;
-  if(tank_tempf > 100){     // turn Chiller off is T/C is in error   
-    // Turn chiller Off      
-    set_chiller_output_to = false;  
-    
-    //  Serial.println("*****  Chiller OFF *****");
-  }  
-  else {
-
-    if(tank_tempf > Chiller_on_temp){     // turn Chiller on if temp is above Chiller_on_temp
-      //digitalWrite(Chiller, LOW);
-      set_chiller_output_to = true;     
-      
-      //  Serial.println("*****  Chiller ON *****");
-    }  
-  }
-
-
-  if(tank_tempf < Chiller_off_temp){    //turn Chiller off if temp is below Chiller_off_temp
-    // Turn chiller Off      
-    set_chiller_output_to = false;     
-    
-    // Serial.println("*****  Chiller OFF *****");
-  }
-  if(keypadmode == Temp_Screen){
-    //LCD.GotoXY(0,7);           
-    if(digitalRead(Chiller) == LOW){
-      //LCD.print("Chiller : ON ");
-    }
-    else{
-      //LCD.print("Chiller : Off");
-    }
-  }
-  if(keypadmode == Chiller_Screen){
-    //LCD.setCursor(0, 2);
-    //LCD.print("Tank: "); 
-    float tempF =(DallasTemperature::toFahrenheit(TanktempC)); // Converts TanktempC to Fahrenheit
-    //LCD.print(tempF); 
-    //LCD.print(" F"); 
-
-    //LCD.GotoXY(0,4);
-    //LCD.print("Turn  ON: ");  
-
-    //LCD.print(Chiller_on_temp);
-    //LCD.GotoXY(0,5);
-    //LCD.print("Turn OFF: ");  
-
-    //LCD.print(Chiller_off_temp);
-    //LCD.GotoXY(0,7); 
-    if(digitalRead(Chiller) == LOW){
-      //LCD.print("Chiller: ON ");
-    }
-    else{
-      //LCD.print("Chiller: Off");
-    }
-  }
  
-
-}
 
  
 void ClearAlarmMessage()
@@ -1361,52 +1420,51 @@ void FeedingMode(){
 
  
 
-
-
-  
 void outputs(){
   // should be the only place the “digitalwrite” for a output is used
   // Heater Control
   if (set_Heater_output_to == true && disableheater == false ){
 
-    digitalWrite(Heater, LOW);
+    bottom_relays.digitalWrite(Heater, LOW);
   }
   else{
-    digitalWrite(Heater, HIGH);
+    bottom_relays.digitalWrite(Heater, HIGH);
   }
   // Main Pump Control
 
   if (set_mainpump_output_to == true && disablemainpump == false){
 
-    digitalWrite(Main_Pump, LOW);
+   bottom_relays.digitalWrite(Main_Pump, LOW);
   }
   else{
-    digitalWrite(Main_Pump, HIGH);
+   bottom_relays.digitalWrite(Main_Pump, HIGH);
   }
   // PowerHead Control
   if (set_powerhead_output_to == true && disablepowerhead == false){
 
-    digitalWrite(PowerHead, LOW);
+    bottom_relays.digitalWrite(PowerHead, LOW);
+    bottom_relays.digitalWrite(JeboPowerHead, LOW);
   }
   else{
-    digitalWrite(PowerHead, HIGH);
+    bottom_relays.digitalWrite(PowerHead, HIGH);
+    bottom_relays.digitalWrite(JeboPowerHead, LOW);
   }
   // Chiller Control
   if (set_chiller_output_to == true && disablechiller == false){
 
-    digitalWrite(Chiller, LOW);
+  //  digitalWrite(Chiller, LOW);
   }
   else{
-    digitalWrite(Chiller, HIGH);
+  //  digitalWrite(Chiller, HIGH);
   }
   
   // Refuge light Control
   if (set_refugelight_output_to == true && disablerefugelight == false){
 
-    digitalWrite(RefugeLED, LOW);
+   top_relays.digitalWrite(RefugeLED, LOW);
   }
   else{
-    digitalWrite(RefugeLED, HIGH);
+    top_relays.digitalWrite(RefugeLED, HIGH);
   }
 
 
@@ -1414,17 +1472,16 @@ void outputs(){
   // Skimmer Control
   if (set_Skimmer_output_to == true && disableSkimmer == false ){
 
-    digitalWrite(Skimmer, LOW);
+    bottom_relays.digitalWrite(Skimmer, LOW);
   }
   else{
-    digitalWrite(Skimmer, HIGH);
+    bottom_relays.digitalWrite(Skimmer, HIGH);
   }
 
 
   
 
 }
-
 
 
 void Send_message_to_iphone(char *firsthalf, char *secondhalf){

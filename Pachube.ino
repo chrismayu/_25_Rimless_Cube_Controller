@@ -6,127 +6,117 @@ void status_of_heroku_info(){
 
   boolean go_ahead_push_to_heroku;
 
-  
+
 
   go_ahead_push_to_heroku = false;
 
-  
 
 
 
-  if(digitalRead(Main_Pump) == LOW){
+
+  if(bottom_relays.digitalRead(Main_Pump) == LOW){
 
     current_status_of_Main_Pump = true;
 
-    }
+  }
 
-    else{
+  else{
 
     current_status_of_Main_Pump = false;
 
-    }
+  }
 
 
 
-  if(digitalRead(PowerHead) == LOW){
+  if(bottom_relays.digitalRead(PowerHead) == LOW){
 
     current_status_of_PowerHead = true;
 
-    }
+  }
 
-    else{
+  else{
 
     current_status_of_PowerHead = false;
 
-    }
+  }
 
 
 
-  if(digitalRead(Heater) == LOW){
+  if(bottom_relays.digitalRead(Heater) == LOW){
 
     current_status_of_Heater = true;
 
-    }
+  }
 
-    else{
+  else{
 
     current_status_of_Heater = false;
 
-    }
-
-    
-
-  if(digitalRead(Chiller) == LOW){
-
-    current_status_of_Chiller = true;
-
-    }
-
-    else{
-
-    current_status_of_Chiller = false;
-
-    }
+  }
 
 
 
-  if(digitalRead(RefugeLED) == LOW){
+
+
+
+
+  if(top_relays.digitalRead(RefugeLED) == LOW){
 
     current_status_of_RefugeLED = true;
 
-    }
+  }
 
-    else{
+  else{
 
     current_status_of_RefugeLED = false;
 
-    }
-
- 
+  }
 
 
 
-  if(digitalRead(Skimmer) == LOW){
+
+
+  if(bottom_relays.digitalRead(Skimmer) == LOW){
 
     current_status_of_Skimmer = true;
 
-    }
+  }
 
-    else{
+  else{
 
     current_status_of_Skimmer = false;
 
-    }
+  }
 
-   
 
- 
 
-    
 
-  if(digitalRead(ATO_Valve) == LOW){
+
+
+
+  if(bottom_relays.digitalRead(ATO_Valve) == LOW){
 
     current_status_of_ato_valve = true;
 
-    }
+  }
 
-    else{
+  else{
 
     current_status_of_ato_valve = false;
 
-    }
+  }
 
-  
+
 
   if(pass_status_of_ato_valve != current_status_of_ato_valve){
 
-  //  Serial.println("check status - ato");
+    //  Serial.println("check status - ato");
 
-      go_ahead_push_to_heroku = true;
+    go_ahead_push_to_heroku = true;
 
-      if (current_status_of_ato_valve == true){
+    if (current_status_of_ato_valve == true){
 
-      
+
 
 
 
@@ -136,7 +126,8 @@ void status_of_heroku_info(){
 
 
 
-     }else{
+    }
+    else{
 
 
 
@@ -144,23 +135,23 @@ void status_of_heroku_info(){
 
 
 
-      }
+    }
 
     pass_status_of_ato_valve = current_status_of_ato_valve;
 
-    }
+  }
 
-    
 
-   if(pass_status_of_Main_Pump != current_status_of_Main_Pump){
+
+  if(pass_status_of_Main_Pump != current_status_of_Main_Pump){
 
     // Serial.println("check status - main pump");
 
-        go_ahead_push_to_heroku = true;
+    go_ahead_push_to_heroku = true;
 
-      if (current_status_of_Main_Pump == true){
+    if (current_status_of_Main_Pump == true){
 
-      
+
 
 
 
@@ -170,7 +161,8 @@ void status_of_heroku_info(){
 
 
 
-     }else{
+    }
+    else{
 
 
 
@@ -178,27 +170,27 @@ void status_of_heroku_info(){
 
 
 
-      }
+    }
 
     pass_status_of_Main_Pump = current_status_of_Main_Pump;
 
-    }
-
-    
-
-     if(pass_status_of_PowerHead != current_status_of_PowerHead){
-
-     //  Serial.println("check status - powerhead");
-
-        go_ahead_push_to_heroku = true;
+  }
 
 
 
+  if(pass_status_of_PowerHead != current_status_of_PowerHead){
+
+    //  Serial.println("check status - powerhead");
+
+    go_ahead_push_to_heroku = true;
 
 
-      if (current_status_of_PowerHead == true){
 
-      
+
+
+    if (current_status_of_PowerHead == true){
+
+
 
 
 
@@ -208,7 +200,8 @@ void status_of_heroku_info(){
 
 
 
-     }else{
+    }
+    else{
 
 
 
@@ -216,31 +209,31 @@ void status_of_heroku_info(){
 
 
 
-      }
+    }
 
 
 
 
 
-    
+
 
     pass_status_of_PowerHead = current_status_of_PowerHead;
 
-    }
-
-    
-
-     if(pass_status_of_Heater != current_status_of_Heater){
-
-      // Serial.println("check status - heater");
-
-        go_ahead_push_to_heroku = true;
+  }
 
 
 
-      if (current_status_of_Heater == true){
+  if(pass_status_of_Heater != current_status_of_Heater){
 
-      
+    // Serial.println("check status - heater");
+
+    go_ahead_push_to_heroku = true;
+
+
+
+    if (current_status_of_Heater == true){
+
+
 
 
 
@@ -250,7 +243,8 @@ void status_of_heroku_info(){
 
 
 
-     }else{
+    }
+    else{
 
 
 
@@ -258,29 +252,29 @@ void status_of_heroku_info(){
 
 
 
-      }
+    }
 
 
 
 
 
-      
+
 
     pass_status_of_Heater = current_status_of_Heater;
 
-    }
-
-    
-
-     if(pass_status_of_Chiller != current_status_of_Chiller){
-
-        go_ahead_push_to_heroku = true;
+  }
 
 
 
-      if (current_status_of_Chiller == true){
+  if(pass_status_of_Chiller != current_status_of_Chiller){
 
-      
+    go_ahead_push_to_heroku = true;
+
+
+
+    if (current_status_of_Chiller == true){
+
+
 
 
 
@@ -290,7 +284,8 @@ void status_of_heroku_info(){
 
 
 
-     }else{
+    }
+    else{
 
 
 
@@ -298,31 +293,31 @@ void status_of_heroku_info(){
 
 
 
-      }
+    }
 
 
 
 
 
-       
+
 
     pass_status_of_Chiller = current_status_of_Chiller;
 
-    }
-
-  
-
-     if(pass_status_of_RefugeLED != current_status_of_RefugeLED){
-
-       Serial.println("check status - Refuge LED");
-
-      go_ahead_push_to_heroku = true;
+  }
 
 
 
-      if (current_status_of_RefugeLED == true){
+  if(pass_status_of_RefugeLED != current_status_of_RefugeLED){
 
-      
+    Serial.println("check status - Refuge LED");
+
+    go_ahead_push_to_heroku = true;
+
+
+
+    if (current_status_of_RefugeLED == true){
+
+
 
 
 
@@ -332,7 +327,8 @@ void status_of_heroku_info(){
 
 
 
-     }else{
+    }
+    else{
 
 
 
@@ -340,7 +336,7 @@ void status_of_heroku_info(){
 
 
 
-      }
+    }
 
 
 
@@ -348,21 +344,21 @@ void status_of_heroku_info(){
 
     pass_status_of_RefugeLED = current_status_of_RefugeLED;
 
-    }
-
-    
+  }
 
 
 
-     if(pass_status_of_Skimmer != current_status_of_Skimmer){
 
-    
 
-      go_ahead_push_to_heroku = true;
+  if(pass_status_of_Skimmer != current_status_of_Skimmer){
 
-      if (current_status_of_Skimmer == true){
 
-      
+
+    go_ahead_push_to_heroku = true;
+
+    if (current_status_of_Skimmer == true){
+
+
 
 
 
@@ -372,7 +368,8 @@ void status_of_heroku_info(){
 
 
 
-     }else{
+    }
+    else{
 
 
 
@@ -380,115 +377,117 @@ void status_of_heroku_info(){
 
 
 
-      }
+    }
 
     pass_status_of_Skimmer = current_status_of_Skimmer;
 
-    }
-
-    
+  }
 
 
 
- 
 
-  
+
+
+
+
 
   if(Tank_Temp_Avg_average != tempF2_heroku){
 
-  
 
-     Tank_tempF_heroku_2 = (DallasTemperature::toFahrenheit(Tank_Temp_Avg_average));
 
- 
-
-   
-
-   if(Tank_tempF_heroku_2 > 40){
-
-    
-
-     Serial.print("Temp F told heroku to work: ");
-
-  
-
-       go_ahead_push_to_heroku = true;
-
-       heroku_code = "07";
-
-   }else{
-
-   
-
-   }
-
- 
-
- 
-
-  tempF2_heroku = Tank_Temp_Avg_average;
-
-  //Serial.print(Tanktemp_first_heroku); Serial.print(".");
-
- // Serial.println(Tanktemp_second_heroku);
-
-}
+    Tank_tempF_heroku_2 = (DallasTemperature::toFahrenheit(Tank_Temp_Avg_average));
 
 
 
- 
+
+
+    if(Tank_tempF_heroku_2 > 40){
 
 
 
-Ambient_tempF_heroku = (DallasTemperature::toFahrenheit(AmbienttempC));
+      Serial.print("Temp F told heroku to work: ");
 
 
 
- if(Ambient_tempF_heroku != Ambient_tempF2_heroku){
+      go_ahead_push_to_heroku = true;
 
-  
+      heroku_code = "07";
 
-float Ambient_tempF_heroku_1 = Ambient_Temp_Avg_average;
-
- Ambient_tempF_heroku_2 = (DallasTemperature::toFahrenheit(Ambient_tempF_heroku_1));
-
+    }
+    else{
 
 
-  Ambienttemp_first_heroku = Ambient_tempF_heroku_2; //// makes 26.7 into 26
 
- int Ambient_tempF2 = Ambient_tempF_heroku_2 * 100;//// makes 26.7 into 2670
+    }
 
- int Ambient_tempF3 = Ambienttemp_first_heroku * 100; /// makes 26 into 2600
 
-   Ambienttemp_second_heroku = Ambient_tempF2 - Ambient_tempF3;
 
-   
+
+
+    tempF2_heroku = Tank_Temp_Avg_average;
+
+    //Serial.print(Tanktemp_first_heroku); Serial.print(".");
+
+    // Serial.println(Tanktemp_second_heroku);
+
+  }
+
+
+
+
+
+
+
+  Ambient_tempF_heroku = (DallasTemperature::toFahrenheit(AmbienttempC));
+
+
+
+  if(Ambient_tempF_heroku != Ambient_tempF2_heroku){
+
+
+
+    float Ambient_tempF_heroku_1 = Ambient_Temp_Avg_average;
+
+    Ambient_tempF_heroku_2 = (DallasTemperature::toFahrenheit(Ambient_tempF_heroku_1));
+
+
+
+    Ambienttemp_first_heroku = Ambient_tempF_heroku_2; //// makes 26.7 into 26
+
+    int Ambient_tempF2 = Ambient_tempF_heroku_2 * 100;//// makes 26.7 into 2670
+
+      int Ambient_tempF3 = Ambienttemp_first_heroku * 100; /// makes 26 into 2600
+
+      Ambienttemp_second_heroku = Ambient_tempF2 - Ambient_tempF3;
+
+
 
     if(Ambienttemp_first_heroku > 40){
 
-    Serial.print(" Ambient Temp F told heroku to work: ");
+      Serial.print(" Ambient Temp F told heroku to work: ");
 
-    // go_ahead_push_to_heroku = true;
+      // go_ahead_push_to_heroku = true;
 
-     // heroku_code = "08";
+      // heroku_code = "08";
 
-   }else{
-
-   
-
-   }
+    }
+    else{
 
 
 
+    }
 
 
-  Ambient_tempF2_heroku = Ambient_tempF_heroku;
 
-  
 
-   
 
-}
+    Ambient_tempF2_heroku = Ambient_tempF_heroku;
+
+
+
+
+
+  }
 
 
 
@@ -504,13 +503,13 @@ float Ambient_tempF_heroku_1 = Ambient_Temp_Avg_average;
 
 
 
- if(go_ahead_push_to_heroku == true && temps_up == true){
+  if(go_ahead_push_to_heroku == true && temps_up == true){
 
-   Serial.print("Status of Heroku told Arduino to push data");
+    Serial.print("Status of Heroku told Arduino to push data");
 
-     heroku_in_out();
+    heroku_in_out();
 
-   }
+  }
 
 
 
@@ -534,185 +533,185 @@ float Ambient_tempF_heroku_1 = Ambient_Temp_Avg_average;
 
 void heroku_in_out() {
 
-   Serial.println("Going to TRY to send data");
+  Serial.println("Going to TRY to send data");
 
 
 
   digitalWrite(Grounding_plug, HIGH); /// turn off grounding probe
 
- delay(500);
+  delay(500);
 
-    
 
- 
 
-    char main_temp[10];
 
-    String main_tempAsString;
 
-    dtostrf(Tank_tempF_heroku_2,1,2,main_temp);
+  char main_temp[10];
 
-    main_tempAsString = String(main_temp);
+  String main_tempAsString;
 
- 
+  dtostrf(Tank_tempF_heroku_2,1,2,main_temp);
 
-    char Ambient_temp[10];
+  main_tempAsString = String(main_temp);
 
-    String Ambient_tempAsString;
 
-    dtostrf(Ambient_tempF_heroku_2,1,2,Ambient_temp);
 
-    Ambient_tempAsString = String(Ambient_temp);
+  char Ambient_temp[10];
+
+  String Ambient_tempAsString;
+
+  dtostrf(Ambient_tempF_heroku_2,1,2,Ambient_temp);
+
+  Ambient_tempAsString = String(Ambient_temp);
 
 
 
   String ato_valve;
 
-    if(current_status_of_ato_valve == true){
+  if(current_status_of_ato_valve == true){
 
     ato_valve = "T";
 
-    }
+  }
 
-    else{
+  else{
 
     ato_valve = "F";
 
-    }
+  }
 
-    
 
-     String water_level;
 
-    if(current_status_of_water_level == true){
+  String water_level;
+
+  if(current_status_of_water_level == true){
 
     water_level = "T";
 
-    }
+  }
 
-    else{
+  else{
 
     water_level = "F";
 
-    }
+  }
 
 
 
-   String powerhead;
+  String powerhead;
 
-    if(current_status_of_PowerHead == true){
+  if(current_status_of_PowerHead == true){
 
     powerhead = "T";
 
-    }
+  }
 
-    else{
+  else{
 
     powerhead = "F";
 
-    }
+  }
 
-     
 
-    
 
-     String heater;
 
-    if(current_status_of_Heater == true){
+
+  String heater;
+
+  if(current_status_of_Heater == true){
 
     heater = "T";
 
-    }
+  }
 
-    else{
+  else{
 
     heater = "F";
 
-    }
+  }
 
-    
 
-     String main_pump;
 
-    if(current_status_of_Main_Pump == true){
+  String main_pump;
+
+  if(current_status_of_Main_Pump == true){
 
     main_pump = "T";
 
-    }
+  }
 
-    else{
+  else{
 
     main_pump = "F";
 
-    }
-
-    
+  }
 
 
 
-     String skimmer;
 
-    if(current_status_of_Skimmer == true){
+
+  String skimmer;
+
+  if(current_status_of_Skimmer == true){
 
     skimmer = "T";
 
-    }
+  }
 
-    else{
+  else{
 
     skimmer = "F";
 
-    }
+  }
 
 
 
   //    \"skim\":\"" + skimmer + "\",
 
-    
 
-          String refuge_led;
 
-    if(current_status_of_RefugeLED == true){
+  String refuge_led;
+
+  if(current_status_of_RefugeLED == true){
 
     refuge_led = "T";
 
-    }
+  }
 
-    else{
+  else{
 
     refuge_led = "F";
 
-    }        
+  }        
 
 
 
   //    \"r_l\":\"" + refuge_led + "\",  
 
-   
-
-   
-
- String data = "{\"m_t\":\"" + main_tempAsString + "\", \"t_n\":\"" + arduino_reef_tank_id + "\", \"a_t\":\"" + Ambient_tempAsString + "\",\"w_l\":\"" + water_level + "\", \"r_l\":\"" + refuge_led + "\", \"skim\":\"" + skimmer + "\", \"ph\":\"" + powerhead + "\", \"m_p\":\"" + main_pump + "\", \"h\":\"" + heater + "\", \"h_c\":\"" + heroku_code + "\", \"ato\":\"" + ato_valve + "\"}";
-
- 
-
-// Serial.print("Data to Send: ");
-
-// Serial.println(data);
-
- 
-
-sendData(data); /// Send Data to Heroku
-
- 
-
-digitalWrite(Grounding_plug, LOW); /// turn off grounding probe
 
 
 
 
+  String data = "{\"m_t\":\"" + main_tempAsString + "\", \"t_n\":\"" + arduino_reef_tank_id + "\", \"a_t\":\"" + Ambient_tempAsString + "\",\"w_l\":\"" + water_level + "\", \"r_l\":\"" + refuge_led + "\", \"skim\":\"" + skimmer + "\", \"ph\":\"" + powerhead + "\", \"m_p\":\"" + main_pump + "\", \"h\":\"" + heater + "\", \"h_c\":\"" + heroku_code + "\", \"ato\":\"" + ato_valve + "\"}";
 
-   heroku_code = "00";  ///clear the code for next time
+
+
+  // Serial.print("Data to Send: ");
+
+  // Serial.println(data);
+
+
+
+  sendData(data); /// Send Data to Heroku
+
+
+
+  digitalWrite(Grounding_plug, LOW); /// turn off grounding probe
+
+
+
+
+
+  heroku_code = "00";  ///clear the code for next time
 
 }
 
@@ -732,42 +731,42 @@ digitalWrite(Grounding_plug, LOW); /// turn off grounding probe
 
 // this method makes a HTTP connection to the server:
 void sendData(String thisData) {
-  
+
   String uri = ("/watchers");
   // if there's a successful connection:
   if (client.connect(server, 80)) {
     Serial.println("connecting...");
     // send the HTTP PUT request:
-    
-    
+
+
     Serial.println("start sending data");
-  client.print("POST ");
-  client.print(uri);
-  client.println(" HTTP/1.1");
-  client.print("Host: ");
-  client.println(heroku_url);
- 
-   client.println("Content-Type: application/json");
-  //client.println("Content-Type: application/x-www-form-urlencoded");
-  client.println("Connection: close");
-  client.print("Content-Length: ");
-  client.println(thisData.length());
-  client.println();
-   Serial.print("data:-----");
- Serial.println(thisData);
-  client.print(thisData);
-  client.println();
-  Serial.println("done sending data");
-    
- last_connection_sent = true;
-   
-  failures = 0;
-     
+    client.print("POST ");
+    client.print(uri);
+    client.println(" HTTP/1.1");
+    client.print("Host: ");
+    client.println(heroku_url);
+
+    client.println("Content-Type: application/json");
+    //client.println("Content-Type: application/x-www-form-urlencoded");
+    client.println("Connection: close");
+    client.print("Content-Length: ");
+    client.println(thisData.length());
+    client.println();
+    Serial.print("data:-----");
+    Serial.println(thisData);
+    client.print(thisData);
+    client.println();
+    Serial.println("done sending data");
+
+    last_connection_sent = true;
+
+    failures = 0;
+
   } 
   else {
     // if you couldn't make a connection:
     last_connection_sent = false;
-      
+
     failures = failures + 1;
     Serial.println("connection failed");
     Serial.println();
@@ -780,36 +779,37 @@ void sendData(String thisData) {
 
 
 
- 
+
 
 void Maintain_heroku_connection(){
-  
-  
- RTC.getTime();
 
- if(RTC.minute == 10 || RTC.minute == 40){
-  if(Maintain_connection_sent == false){
-    
-    printDate();
-   Serial.print("Send data to heroku to maintain connection");
-    heroku_code = "11";
-   heroku_in_out();
-  
-   Maintain_connection_sent = true; 
- 
-  } 
-  }else{
-   Maintain_connection_sent = false;
-   
-}
 
-if(last_connection_sent == false && failures > 4){
-  Serial.println("Failed Last time  - Trying to send again...........");
-  heroku_code = "12";
-  heroku_in_out();
-  
-  
-}
+  RTC.getTime();
+
+  if(RTC.minute == 10 || RTC.minute == 40){
+    if(Maintain_connection_sent == false){
+
+      printDate();
+      Serial.print("Send data to heroku to maintain connection");
+      heroku_code = "11";
+      heroku_in_out();
+
+      Maintain_connection_sent = true; 
+
+    } 
+  }
+  else{
+    Maintain_connection_sent = false;
+
+  }
+
+  if(last_connection_sent == false && failures > 4){
+    Serial.println("Failed Last time  - Trying to send again...........");
+    heroku_code = "12";
+    heroku_in_out();
+
+
+  }
 
 
 
@@ -821,50 +821,54 @@ if(last_connection_sent == false && failures > 4){
 void heroku_Screen_controls(){
   // put screen stuff here
 
- if(keypadmode == heroku_Screen){
+  if(keypadmode == heroku_Screen){
     //LCD.setCursor(0, 3);
     //LCD.print("Status: ");
     //LCD.setCursor(8, 4);
-if(last_connection_sent == false){
-  //LCD.print("Failed");
-}else{
-//LCD.print("Okay");
-}
-   //LCD.setCursor(0, 5);
+    if(last_connection_sent == false){
+      //LCD.print("Failed");
+    }
+    else{
+      //LCD.print("Okay");
+    }
+    //LCD.setCursor(0, 5);
     if(Maintain_connection_sent == false){
-  //LCD.print("Maintained: F");
-}else{
-//LCD.print("Maintained: T");
-}
-   
-    
+      //LCD.print("Maintained: F");
+    }
+    else{
+      //LCD.print("Maintained: T");
+    }
+
+
     //LCD.setCursor(0, 6);
     //LCD.print("Last Trans:");
     //LCD.setCursor(0, 7);
     //LCD.print(herokutext);
   }
 
-  
-  
-if(small_LCD_Screen == S_L_heroku_Screen){
- 
-    
-   //LCDsmall.setCursor(0, 1);
- if(last_connection_sent == false){
-   
-   //LCDsmall.print("Pach:NG ");
 
-}else{
- //LCDsmall.print("Pach:OK ");
-}
- 
+
+  if(small_LCD_Screen == S_L_heroku_Screen){
+
+
+    //LCDsmall.setCursor(0, 1);
+    if(last_connection_sent == false){
+
+      //LCDsmall.print("Pach:NG ");
+
+    }
+    else{
+      //LCDsmall.print("Pach:OK ");
+    }
+
 
     //LCDsmall.setCursor(8, 1);
     //LCDsmall.print("LS:");
-   //LCDsmall. print(herokutext_small_//LCD);
-}
+    //LCDsmall. print(herokutext_small_//LCD);
+  }
 
 
-  
-  
+
+
 }
+

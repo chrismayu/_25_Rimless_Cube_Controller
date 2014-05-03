@@ -6,7 +6,7 @@ void Voltage_Detected_Where(){
   // turn off   Heater  & Check
   if(Found_Voltage_Problem == false){
 
-    digitalWrite(Heater, HIGH);
+    bottom_relays.digitalWrite(Heater, HIGH);
     delay(200);
 
     //check for voltage
@@ -14,7 +14,7 @@ void Voltage_Detected_Where(){
 
     if(Voltage_detect == true){
       //not heater so turn back on
-      digitalWrite(Heater, LOW);
+      bottom_relays.digitalWrite(Heater, LOW);
 
     }
     else{
@@ -34,13 +34,13 @@ void Voltage_Detected_Where(){
   // turn off Main Pump and check
   if(Found_Voltage_Problem == false){
 
-    //digitalWrite(Main_Pump, HIGH);
+    //bottom_relays.digitalWrite(Main_Pump, HIGH);
     delay(200);
 
     //check for voltage
     if(Voltage_detect == true){
       //not MainPump so turn back on
-      //digitalWrite(Main_Pump, LOW);
+      //bottom_relays.digitalWrite(Main_Pump, LOW);
 
     }
     else{
@@ -58,13 +58,13 @@ void Voltage_Detected_Where(){
   // Turn off Powerhead and check
   if(Found_Voltage_Problem == false){
 
-    digitalWrite(PowerHead, HIGH);
+    bottom_relays.digitalWrite(PowerHead, HIGH);
     delay(200);
 
     //check for voltage
     if(Voltage_detect == true){
       //not Powerhead so turn back on
-      digitalWrite(PowerHead, LOW);
+      bottom_relays.digitalWrite(PowerHead, LOW);
 
     }
     else{
@@ -80,30 +80,8 @@ void Voltage_Detected_Where(){
     }
   }
 
-  //Turn off chiller and check
-  if(Found_Voltage_Problem == false){
-
-    digitalWrite(Chiller, HIGH);
-    delay(200);
-
-    //check for voltage
-    if(Voltage_detect == true){
-      //not chiller so turn back on
-      digitalWrite(Chiller, LOW);
-
-    }
-    else{
-      // chiller is the problem
-      disablechiller = true;
-      Found_Voltage_Problem = true;
-      // send error code to iphone and display in screens}
-      if(Found_Voltage_Problem_iphone_sent == false){
-        //Send_message_to_iphone("The chiller is leaking ","I have turned it off  Please help me");
-        Found_Voltage_Problem_iphone_sent = true;
-      }
-
-    }
-  }
+ 
+  
 
 
   //turn off main light and check
@@ -137,13 +115,13 @@ void Voltage_Detected_Where(){
 
   if(Found_Voltage_Problem == false){
 
-    digitalWrite(RefugeLED, HIGH);
+    bottom_relays.digitalWrite(RefugeLED, HIGH);
     delay(200);
 
     //check for voltage
     if(Voltage_detect == true){
       //not v so turn back on
-      digitalWrite(RefugeLED, LOW);
+      bottom_relays.digitalWrite(RefugeLED, LOW);
 
     }
     else{

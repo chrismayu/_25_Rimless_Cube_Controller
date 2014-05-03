@@ -9,11 +9,7 @@ void RunFugelight()
 
 {
 
-
-
- 
-
-float time = current_time;
+  float time = current_time;
 
   if(time >= FugeLightOn && time <= FugeLightOff)
 
@@ -23,15 +19,8 @@ float time = current_time;
 
     set_refugelight_output_to = true;
 
-
-
-  }
-
-
-
-  else
-
-  {
+  } 
+  else  {
 
     // Turn refugelight Off
 
@@ -41,19 +30,19 @@ float time = current_time;
 
   }
 
- 
+
 
 }
- 
+
 
 void Light_shelf_Controller(){
 
 
- 
- 
+
+
   float turn_off_light_shelf_when;
- 
-  if(digitalRead(relay_shelf_light) == LOW && light_shelf_is_on == false){
+
+  if(top_relays.digitalRead(relay_shelf_light) == LOW && light_shelf_is_on == false){
 
     light_shelf_is_on = true;
 
@@ -64,11 +53,11 @@ void Light_shelf_Controller(){
 
   else{
 
- 
+
   }
 
- 
-  if(digitalRead(relay_shelf_light) == HIGH ){
+
+  if(top_relays.digitalRead(relay_shelf_light) == HIGH ){
 
     light_shelf_is_on = false;
 
@@ -76,7 +65,7 @@ void Light_shelf_Controller(){
 
 
 
- 
+
 
   if (light_shelf_delay_bool == true ){
 
@@ -85,74 +74,74 @@ void Light_shelf_Controller(){
   }
 
 
- 
+
 
   if (current_time >= turn_off_light_shelf_when){
 
     if (light_shelf_delay_bool == true ){
- 
+
       // set_light_shelf_output_to = true;
 
-       Serial.println("Turning Off light");
+      if (DEBUG_Shelf_light) Serial.println("Turning Off light");
 
-      digitalWrite(relay_shelf_light, HIGH);
+      top_relays.digitalWrite(relay_shelf_light, HIGH);
 
       light_shelf_delay_bool = false;
- 
+
     }
 
- 
+
   } 
   else{
- 
-    Serial.println("Turning On light");
 
-    digitalWrite(relay_shelf_light, LOW);
- 
+    if (DEBUG_Shelf_light) Serial.println("Turning On light");
+
+    top_relays.digitalWrite(relay_shelf_light, LOW);
+
   }
- 
- 
-   if(digitalRead(relay_shelf_light) == LOW ){
 
-     Serial.print("-----  LIGHT START ---------- ");
 
- 
+  if(top_relays.digitalRead(relay_shelf_light) == LOW ){
 
- 
-   Serial.print("relay_shelf_light out status: ");   
-   Serial.println(digitalRead(relay_shelf_light));
-   
-   Serial.print("turn_off_light_shelf_when ");
-   Serial.println(turn_off_light_shelf_when);
-   
-   Serial.print("Current Time ");
-   Serial.println(current_time);
-   
-   
-   
-   Serial.print("Will Run in: ");
-   
-   Serial.println(current_time - turn_off_light_shelf_when);
-   
-   Serial.print("light_shelf_delay_bool ");
-   
-   Serial.println(light_shelf_delay_bool);
-   
-   
-   
-   Serial.print("light_shelf_is_on ");
-   
-   Serial.println(light_shelf_is_on);
-   
-   
-    
-   
-   Serial.print(" ");
-   
-   Serial.print("-----  LIGHT END ---------- ");
- 
-   }
- 
+    if (DEBUG_Shelf_light) Serial.print("-----  LIGHT START ---------- ");
+
+
+
+
+    if (DEBUG_Shelf_light) Serial.print("relay_shelf_light out status: ");   
+    if (DEBUG_Shelf_light) Serial.println(top_relays.digitalRead(relay_shelf_light));
+
+    if (DEBUG_Shelf_light) Serial.print("turn_off_light_shelf_when ");
+    if (DEBUG_Shelf_light) Serial.println(turn_off_light_shelf_when);
+
+    if (DEBUG_Shelf_light) Serial.print("Current Time ");
+    if (DEBUG_Shelf_light) Serial.println(current_time);
+
+
+
+    if (DEBUG_Shelf_light) Serial.print("Will Run in: ");
+
+    Serial.println(current_time - turn_off_light_shelf_when);
+
+    if (DEBUG_Shelf_light) Serial.print("light_shelf_delay_bool ");
+
+    if (DEBUG_Shelf_light) Serial.println(light_shelf_delay_bool);
+
+
+
+    if (DEBUG_Shelf_light) Serial.print("light_shelf_is_on ");
+
+    if (DEBUG_Shelf_light) Serial.println(light_shelf_is_on);
+
+
+
+
+    Serial.print(" ");
+
+    if (DEBUG_Shelf_light) Serial.print("-----  LIGHT END ---------- ");
+
+  }
+
 }
 
 
@@ -164,10 +153,12 @@ void Light_shelf_Controller(){
 void turn_on_shelf_light(){
 
   turn_on_light_shelf = true;
-  digitalWrite(relay_shelf_light, LOW);
-  Serial.println("Trying to Turn On light");
+  top_relays.digitalWrite(relay_shelf_light, LOW);
+  if (DEBUG_Shelf_light) Serial.println("Trying to Turn On light");
 
 }
+
+
 
 
 

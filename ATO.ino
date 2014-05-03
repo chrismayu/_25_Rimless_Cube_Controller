@@ -24,7 +24,7 @@ void ATO(){ /// Main ATO Program Controller
     }
     else{
 
-      digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
+      bottom_relays.digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
     }
 
 
@@ -32,7 +32,7 @@ void ATO(){ /// Main ATO Program Controller
   }
   else{
 
-    digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
+    bottom_relays.digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
   }
 
 
@@ -44,7 +44,7 @@ void ATO(){ /// Main ATO Program Controller
 
 void ATO2(){ /// Main ATO Program Controller
 
-  Serial.print("-----  ATO Start ---------- ");
+  if (DEBUG_ATO) Serial.print("-----  ATO Start ---------- ");
 
   //Delcarations
 
@@ -60,7 +60,7 @@ void ATO2(){ /// Main ATO Program Controller
 
   Run_Pump_for_only_timer = 0.03;
 
-  if(digitalRead(ATO_Valve) == HIGH ){
+  if(bottom_relays.digitalRead(ATO_Valve) == HIGH ){
     pump_is_running = false;
 
   }
@@ -71,7 +71,7 @@ void ATO2(){ /// Main ATO Program Controller
   }
 
 
-  if(digitalRead(ATO_High) == HIGH ){
+  if(buttons.digitalRead(ATO_Water_is_High) == HIGH ){
 
 
 
@@ -88,7 +88,7 @@ void ATO2(){ /// Main ATO Program Controller
 
     current_status_of_water_level = false;
 
-    digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
+   bottom_relays.digitalWrite(ATO_Valve, HIGH); // turn off ATO Pump
 
     ATO_Run_Next_Time = LOW;
 
@@ -108,11 +108,11 @@ void ATO2(){ /// Main ATO Program Controller
   float ATO_delay_Water_level = ATO_delay_between_runs + ATO_ran_last;
 
   if(ATO_delay_Water_level >= Ato_okay_to_run_now && start_delay_for_filled_timmer == false && pump_is_running == false){
-    Serial.println("  ");
-    Serial.println("Added Delay after reaching correct water level");
-    Serial.print("ATO_delay_Water_level ");
-    Serial.println(ATO_delay_Water_level);
-    Serial.println(" ");
+    if (DEBUG_ATO) Serial.println("  ");
+    if (DEBUG_ATO) Serial.println("Added Delay after reaching correct water level");
+    if (DEBUG_ATO) Serial.print("ATO_delay_Water_level ");
+    if (DEBUG_ATO) Serial.println(ATO_delay_Water_level);
+    if (DEBUG_ATO) Serial.println(" ");
     Ato_okay_to_run_now = ATO_delay_Water_level;
     start_delay_for_filled_timmer = true;
 
@@ -140,10 +140,10 @@ void ATO2(){ /// Main ATO Program Controller
 
       if(Watchman_timer_ATO_AT_timer >= Ato_okay_to_run_now){
 
-        Serial.println("Added Delay for watcher timer");
-        Serial.print("Watchman_timer_ATO_AT_timer ");
-        Serial.println(Watchman_timer_ATO_AT_timer);
-        Serial.println(" ");
+      if (DEBUG_ATO)   Serial.println("Added Delay for watcher timer");
+      if (DEBUG_ATO)   Serial.print("Watchman_timer_ATO_AT_timer ");
+      if (DEBUG_ATO)   Serial.println(Watchman_timer_ATO_AT_timer);
+      if (DEBUG_ATO)   Serial.println(" ");
 
         Ato_okay_to_run_now = Watchman_timer_ATO_AT_timer;
 
@@ -167,7 +167,7 @@ void ATO2(){ /// Main ATO Program Controller
 
   if(current_time >= Ato_okay_to_run_now && ATO_Run_Next_Time == HIGH){ // && ATOfaulted == LOW){
 
-    Serial.println("ATO Pump Running");
+    if (DEBUG_ATO) Serial.println("ATO Pump Running");
 
     digitalWrite(ATO_Valve, LOW); //turn ON ATO Pump
 
@@ -179,49 +179,49 @@ void ATO2(){ /// Main ATO Program Controller
   }
 
 
-  Serial.print("ATO_Fault_Count: ");   
-  Serial.println(ATO_Fault_Count);
+ if (DEBUG_ATO)  Serial.print("ATO_Fault_Count: ");   
+  if (DEBUG_ATO) Serial.println(ATO_Fault_Count);
 
-  Serial.print("Ato_okay_to_run_now ");
-  Serial.println(Ato_okay_to_run_now);
+ if (DEBUG_ATO)  Serial.print("Ato_okay_to_run_now ");
+  if (DEBUG_ATO) Serial.println(Ato_okay_to_run_now);
 
-  Serial.print("Current Time ");
-  Serial.println(current_time);
-
-
-
-  Serial.print("Will Run in: ");
-
-  Serial.println(current_time - Ato_okay_to_run_now);
-
-  Serial.print("ATO_ran_last ");
-
-  Serial.println(ATO_ran_last);
+  if (DEBUG_ATO) Serial.print("Current Time ");
+  if (DEBUG_ATO) Serial.println(current_time);
 
 
 
-  Serial.print("Water Level ");
+  if (DEBUG_ATO) Serial.print("Will Run in: ");
 
-  Serial.println(current_status_of_water_level);
+  if (DEBUG_ATO) Serial.println(current_time - Ato_okay_to_run_now);
 
+ if (DEBUG_ATO) Serial.print("ATO_ran_last ");
 
-
-  Serial.print("ATO_Run_Next_Time ");
-
-  Serial.println(ATO_Run_Next_Time);
+  if (DEBUG_ATO) Serial.println(ATO_ran_last);
 
 
 
-  Serial.print("ATO_Got_Time ");
+  if (DEBUG_ATO) Serial.print("Water Level ");
 
-  Serial.println(ATO_Got_Time);
-
-  Serial.print(" ");
-
-  Serial.print("-----  ATO END ---------- ");
+ if (DEBUG_ATO) Serial.println(current_status_of_water_level);
 
 
 
+ if (DEBUG_ATO) Serial.print("ATO_Run_Next_Time ");
+
+ if (DEBUG_ATO)  Serial.println(ATO_Run_Next_Time);
+
+
+
+  if (DEBUG_ATO) Serial.print("ATO_Got_Time ");
+
+  if (DEBUG_ATO) Serial.println(ATO_Got_Time);
+
+  if (DEBUG_ATO) Serial.print(" ");
+
+  if (DEBUG_ATO) Serial.print("-----  ATO END ---------- ");
+
+
+ 
 
 
 
