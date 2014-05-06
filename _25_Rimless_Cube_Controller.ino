@@ -8,137 +8,22 @@
  
  Chris' Arduino Reef Controller
  
- cwcw
- ---------  Analog  ------------
- 
- 
- Analog Pin 0 = 
- Analog Pin 1 = 
- Analog Pin 2 = //LCD POT Sensor
- 
- to be used :
- Pin 0 = RX
- Pin 1 = TX
- Pin 2 = Alarm
- Pin 3 = 
- Pin 4 = buzzerPin
- Pin 5 = MainPanelTempSensorPin 
- Pin 6 = AmbientTempSenserPin
- Pin 7 = TankTempSensorPin
- Pin 8 = ChillerTempSensorPin
- Pin 9 = MainPanelTempSensorPin,LightingPanelTempSensorPin,LightHeatSinkTempSensorPin,RefugeLightTempSensorPin 
- Pin 10 = WhiteledLightPin
- Pin 11 = BlueledLightPin
- Pin 12 = MixedledLightPinwsWS
- Pin 13 = Onboard LED
- 
- Current:
- ---------  PWM  ------------
- Pin 0 = RX
- Pin 1 = TX
- Pin 2 = Alarm
- Pin 3 = TankTempSensorPin
- Pin 4 = buzzerPin
- Pin 5 = MainPanelTempSensorPin 
- Pin 6 = RefugeLightTempSensorPin
- Pin 7 = LightHeatSinkTempSensorPin
- Pin 8 = LightingPanelTempSensorPin
- Pin 9 =  
- Pin 10 = WhiteledLightPin
- Pin 11 = BlueledLightPin
- Pin 12 = MixedledLightPin
- Pin 13 = Onboard LED
- 
- ---------  Digital  ------------
- Pin 18 = Serial - PH Stamp RX 
- Pin 19 = Serial - PH Stamp TX 
- Pin 20 = SDA for I2C
- Pin 21 = SCL for I2C
- -----
- Pin 42 = //LCD - Edge PB
- Pin 41 = //LCD - Center PB
- -Pin 25 = ATO_High
- -Pin 26 = ATO_Low
- -Pin 27 = ATO_Valve
- Pin 40 = //LCD - IF Remote Sensor
- Pin 45 = mode100pb
- Pin 44 = mode101pb
- Pin 43 = mode102pb
- Pin 47 = mode103pb
- Pin 50 = mode104pb - not used
- 
- 
- Pin 39 = Float Sensor for ATO
- Pin 38 = GFCI Input Monitoring
- 
- 
- Pin 22 = Bottom Relay # 2  = Omron Relay #2  - Main Pump
- Pin 23 = Bottom Relay # 1  = Omron Relay #1  - Heater
- Pin 24 = Bottom Relay # 4  = Omron Relay #4  - Chiller/ Fan
- Pin 25 = Bottom Relay # 3  = Omron Relay #3  - PowerHead
- Pin 26 = Bottom Relay # 6  = Omron Relay #6  - ATS Pump
- Pin 27 = Bottom Relay # 5  = Omron Relay #5  - Main lights
- Pin 28 = Bottom Relay # 8 - ATO Valve
- Pin 29 = Bottom Relay # 7 
- 
- 
- Pin 37 = Top Relay # 7
- Pin 36 = Top Relay # 8 
- Pin 35 = Top Relay # 5 
- Pin 34 = Top Relay # 6 
- Pin 33 = Top Relay # 3  
- Pin 32 = Top Relay # 4  - ATO Valve
- Pin 31 = Top Relay # 1 - ATS PUMP
- Pin 20 = Top Relay # 2 - Refuge LIghts
- 
- //38 - gfci
- //39 - spare on termial block - ATO Float sensor
- // 47 feeding -  orange wire  103
- ///45 - ATO   100
- // 44 - water change  101
- // 43 reset 102
- //   
- // 42 -  //LCD Right PB
- // 41 -  //LCD centerPB
- // 40 -  IR
- 
- // bottom
- //1 = 23
- //2 = 22
- //3 = 25
- //4 = 24
- //5 = 27
- //6 = 26
- //7 = 29
- //8 = 28
- 
- // top
- //1 = 31  - ATS pump  
- //2 = 30 - Refuge Lights
- //3 = 33 - Mainlights
- //4 = 32
- //5 = 35
- //6 = 34
- //7 = 37
- //8 = 36
- 
- /// no moon lighting code in project
- 
+  
  */
 
- 
+
 //#include <LiquidCrystal.h>
 #include <WProgram.h>
 #include <Wire.h>
 #include <DS1307new.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
- 
+
 #include <Streaming.h>
 #include <SPI.h>
 #include <Ethernet.h>
- 
- 
+
+
 #include "PCF8574.h" // Required for PCF8574
 
 #define redchip 0x24 // Used on the Top Relays 
@@ -160,15 +45,14 @@ PCF8574 buttons;
 #define COLS 4
 
 #define PCF8574_ADDR 0x38
- 
+
 #define DEBUG_ATO 0
 #define DEBUG_Refuge 0
 #define DEBUG_Shelf_light 0
 #define SET_Clock 0
+#define DEBUG_Sequence_tracker 0
 
  
-//#define DEBUG
-//#define DEBUG_EEPROM
 
 #define DEBUG 1
 
@@ -183,7 +67,7 @@ String arduino_reef_tank_id = "64c7";
 
 byte mac[] = { 
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };//0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED 
-  
+
 IPAddress ip(192, 168, 0, 56);
 
 // initialize the library instance:
@@ -192,8 +76,8 @@ EthernetClient client;
 // if you don't want to use DNS (and reduce your sketch size)
 // use the numeric IP instead of the name for the server:
 IPAddress server( 174,129,212,2); 
- 
- unsigned long lastConnectionTime = 0;          // last time you connected to the server, in milliseconds
+
+unsigned long lastConnectionTime = 0;          // last time you connected to the server, in milliseconds
 boolean lastConnected = false;                 // state of the connection last time through the main loop
 const unsigned long postingInterval = 10*1000;  //delay between updates to pachube.com
 
@@ -225,47 +109,53 @@ int counterValue;
 char *firsthalf;
 char *secondhalf;
 
- 
+
 #define TankTempSensorPin 2
 #define AmbientTempSenserPin 3
 #define ledTestPin 13
 
 
-// Buttons
-#define ATO_Water_is_High 7
+// Buttons - Inputs
+
 #define mode99pb 50  // not used 
+
+
 #define Shelf_Light_PB 1// shelf light
 #define Feeding_Mode_PB 2 // Feeding Mode
 #define WaterChange_Mode_PB 3 //WaterChange Mode
 #define GCFI_Monitoring 4
+#define ATO_Water_is_High 7
 #define mode103pb 50 //
 #define mode104pb 50  // not used
- 
 
+// Outputs
+// Bottom Relays
+
+#define Skimmer 0
 #define ATO_Valve 1
+#define PowerHead 2
+#define Reactor 3
 #define Main_Pump 4
 #define Heater 5
-#define Reactor 3
-#define PowerHead 2
-#define Skimmer 0
 #define Grounding_plug 6
 #define JeboPowerHead 7
- 
 
-#define RefugeLED 0 ///
-int relay_shelf_light = 3;   //30 working shelf light
+// Top Relays
+
+#define RefugeLED 0
+int relay_shelf_light = 3;  
 
 
-
+// extra
 #define relayPin3 34
 #define relayPin4 37
 #define relayPin1 55//35
 #define relayPin2 36
 #define Grounding_plug 50
-#define Spare_Plug 50//26  // #6 plug ATS transformer
+#define Spare_Plug 50 
 
 
- 
+
 
 // Menu and Keypad
 byte menu = 1;
@@ -406,8 +296,8 @@ boolean currentButton103 = LOW;
 boolean lastButton104 = LOW;
 boolean currentButton104 = LOW;
 
- 
- 
+
+
 
 // Outputs
 boolean GFCI_tripped = false;
@@ -466,7 +356,7 @@ float FugeLightOFF12 = 0;
 
 
 //Light Shelf
- int light_shelf_off = -10;  //placeholder ---don't change
+int light_shelf_off = -10;  //placeholder ---don't change
 float light_shelf_delay_start_time = 0;
 float light_shelf_delay_time = 0.02;  //5 minute start up delay
 boolean light_shelf_delay_bool = true;
@@ -483,7 +373,7 @@ uint16_t TimeIsSet = 0xaa55;            // Helper that time must not set again
 byte curHour;
 byte oldHour;
 
- 
+
 // PH and ORP stamp
 int orpValue = 0;
 char PHtext[20];
@@ -574,8 +464,8 @@ float Ambient_tempF_heroku_2;
 float Tank_tempF_heroku_2;
 
 
-  
-  
+
+
 
 // Ambient Temp Averaging
 const int Ambient_Temp_Avg_numReadings = 15;
@@ -604,7 +494,7 @@ int PH_Avg_index_2 = 0;  // the average
 
 
 
- 
+
 
 
 
@@ -613,92 +503,36 @@ int PH_Avg_index_2 = 0;  // the average
 void setup() {
   Wire.begin();
 
-   Serial.begin(57600);
+  Serial.begin(57600);
   // give the ethernet module time to boot up:
-
-
-Serial.print("starting up");
  
-  //
-   // pinMode(relay_shelf_light, OUTPUT);
-//  pinMode(relay_Refuge, OUTPUT); 
- 
- /* now used in the yellow Chipped PCF8574 
- 
-  // ATO
-  pinMode(ATO_Water_is_High, INPUT);
-  
- 
-  // Push Buttons
-  pinMode(mode99pb, INPUT);
-  pinMode(Shelf_Light_PB, INPUT);
-  pinMode(Feeding_Mode_PB, INPUT);
-  pinMode(WaterChange_Mode_PB, INPUT);
-  pinMode(mode103pb, INPUT);
-  pinMode(mode104pb, INPUT);
-  pinMode(GCFI_Monitoring, INPUT);
-  
-  */
-  
-  
+  Serial.print("starting up");
+   
   //LED on Arduino Board
   pinMode(ledTestPin, OUTPUT);  //we'll use the debug LED to output a heartbeat
-
-  //Buzzer
- // pinMode(buzzerPin, OUTPUT);
-
-//bottom_relays.digitalWrite(0, LOW); // Turn off led 2
-
+ 
   // Relays
-  
-  /*
-  pinMode(ATO_Valve, OUTPUT);
-  
-  pinMode(Main_Pump, OUTPUT);
-  pinMode(Heater, OUTPUT);
-  pinMode(Chiller, OUTPUT);
-  pinMode(PowerHead, OUTPUT);
-  pinMode(RefugeLED, OUTPUT);
-  pinMode(Spare_Plug, OUTPUT);
-  pinMode(Reactor, OUTPUT);
-  pinMode(Skimmer, OUTPUT);
-  pinMode(Grounding_plug, OUTPUT);
-  digitalWrite(Grounding_plug, HIGH);//was low 
- */
+
+ 
   pinMode(relayPin1, OUTPUT);
   pinMode(relayPin2, OUTPUT);
   pinMode(relayPin3, OUTPUT);
   pinMode(relayPin4, OUTPUT);
- 
- Serial.print("1");
-   /* Start I2C bus and PCF8574 instance */
-  //top_relays.begin(0x21);
+
+  Serial.print("1");
   
- 
-   Serial.print("red");
+  /* Start I2C bus and PCF8574 instance */
+  Serial.print("red");
   top_relays.begin(redchip);
-   Serial.print("green");
+  Serial.print("green");
   bottom_relays.begin(greenchip);
- 
-   
-  
-    
- //  Serial.print("grey");
- // top_relays.begin(greychip);
- //  Serial.print("sparkle");
- // bottom_relays.begin(sparklechip);
-   Serial.print("pink");
+  Serial.print("pink");
   buttons.begin(pinkchip);
+
  
-  
-  
-  
- 
-  
-  
 
   Serial.print("1a");
-  
+
   /* Setup some PCF8575 pins for demo */
   top_relays.pinMode(0, OUTPUT);
   top_relays.pinMode(1, OUTPUT);
@@ -708,8 +542,8 @@ Serial.print("starting up");
   top_relays.pinMode(5, OUTPUT);
   top_relays.pinMode(6, OUTPUT);
   top_relays.pinMode(7, OUTPUT);
-  
-    /* Setup some PCF8575 pins for demo */
+
+  /* Setup some PCF8575 pins for demo */
   bottom_relays.pinMode(0, OUTPUT);
   bottom_relays.pinMode(1, OUTPUT);
   bottom_relays.pinMode(2, OUTPUT);
@@ -718,8 +552,8 @@ Serial.print("starting up");
   bottom_relays.pinMode(5, OUTPUT);
   bottom_relays.pinMode(6, OUTPUT);
   bottom_relays.pinMode(7, OUTPUT);
-  
-    // Setup some PCF8575 pins for demo 
+
+  // Setup some PCF8575 pins for demo 
   buttons.pinMode(0, INPUT_PULLUP);
   buttons.pinMode(1, INPUT_PULLUP);
   buttons.pinMode(2, INPUT_PULLUP);
@@ -728,9 +562,9 @@ Serial.print("starting up");
   buttons.pinMode(5, INPUT_PULLUP);
   buttons.pinMode(6, INPUT_PULLUP);
   buttons.pinMode(7, INPUT_PULLUP);
-  
-  
-  
+
+
+
   top_relays.digitalWrite(0, HIGH); 
   top_relays.digitalWrite(1, HIGH); 
   top_relays.digitalWrite(2, HIGH); 
@@ -739,7 +573,7 @@ Serial.print("starting up");
   top_relays.digitalWrite(5, HIGH); 
   top_relays.digitalWrite(6, HIGH); 
   top_relays.digitalWrite(7, HIGH); 
-  
+
   bottom_relays.digitalWrite(0, HIGH); 
   bottom_relays.digitalWrite(1, HIGH); 
   bottom_relays.digitalWrite(2, HIGH); 
@@ -748,79 +582,77 @@ Serial.print("starting up");
   bottom_relays.digitalWrite(5, HIGH); 
   bottom_relays.digitalWrite(6, HIGH);
   bottom_relays.digitalWrite(7, HIGH);  
- 
- 
 
- //  digitalWrite(relay_Refuge, LOW); // Refuge light
+
+
+  //  digitalWrite(relay_Refuge, LOW); // Refuge light
   top_relays.digitalWrite(relay_shelf_light, HIGH); // Shelf  light
   top_relays.digitalWrite(RefugeLED, HIGH);
-  
- // bottom
- //1 = Skimmer
- //2 =  ATO Pump
- //3 =  Power head
- //4 =   Reactor
- //5 =  Main Pump
- //6 =  Heater
- //7 =  Grounding Plug
- //8 =  Spare Rec - used for Jebco powerhead
+
+  // bottom
+  //1 = Skimmer
+  //2 =  ATO Pump
+  //3 =  Power head
+  //4 =   Reactor
+  //5 =  Main Pump
+  //6 =  Heater
+  //7 =  Grounding Plug
+  //8 =  Spare Rec - used for Jebco powerhead
 
   // relay default value
   bottom_relays.digitalWrite(Skimmer, HIGH);
   bottom_relays.digitalWrite(ATO_Valve, HIGH);
   bottom_relays.digitalWrite(PowerHead, LOW);
   bottom_relays.digitalWrite(JeboPowerHead, LOW);
-   
   bottom_relays.digitalWrite(Reactor, LOW);
- 
   bottom_relays.digitalWrite(Main_Pump, LOW);
   bottom_relays.digitalWrite(Heater, LOW);
-  
-  
-  
+
+
+
   digitalWrite(relayPin1, HIGH);
   digitalWrite(relayPin2, HIGH);
   digitalWrite(relayPin3, HIGH);
   digitalWrite(relayPin4, HIGH);
-  
- 
+
+
   Serial.print("2");
-  
+
   // start clock
   RTC.getRAM(54, (uint8_t *)&TimeIsSet, sizeof(uint16_t));
- 
+
 
   if (SET_Clock) {
 
-   if (TimeIsSet != 0xaa54)
-  {
-    Serial.println("INFO:Time is not defined. Set time now.");
-    RTC.stopClock();
-    RTC.fillByYMD(2013, 06, 24);
-    RTC.fillByHMS(12, 36, 00);
-    RTC.setTime();
-    RTC.startClock();
-    TimeIsSet = 0xaa54;
-    RTC.setRAM(54, (uint8_t *)&TimeIsSet, sizeof(uint16_t));
-  }
+    if (TimeIsSet != 0xaa54)
+    {
+      Serial.println("INFO:Time is not defined. Set time now.");
+      RTC.stopClock();
+      RTC.fillByYMD(2013, 06, 24);
+      RTC.fillByHMS(12, 36, 00);
+      RTC.setTime();
+      RTC.startClock();
+      TimeIsSet = 0xaa54;
+      RTC.setRAM(54, (uint8_t *)&TimeIsSet, sizeof(uint16_t));
+    }
   }
 
   // Control Register for SQW pin which can be used as an interrupt.
 
   RTC.ctrl = 0x00; // 0x00=disable SQW pin, 0x10=1Hz, 0x11=4096Hz, 0x12=8192Hz, 0x13=32768Hz
   RTC.setCTRL();
- 
 
-   RTC.getTime();
- 
+
+  RTC.getTime();
+
   skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
   skimmer_delay_bool = true;
   //LCD.Clear();
- 
+
   current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600);
 
 
-// BYTE Keyword is no longer supprted
+  // BYTE Keyword is no longer supprted
   // pH stamp
   /// Serial1.flush(); 
   Serial3.begin(38400);
@@ -841,10 +673,10 @@ Serial.print("starting up");
   if (!AmbientSensor.getAddress(AmbientThermometer, 0)) Serial.println("Unable to connect with Ambient Temp Sensor");
   // set the resolution to 9 bit (Each Dallas/Maxim device is capable of several different resolutions)
   AmbientSensor.setResolution(AmbientThermometer, 9);
- 
- 
 
- 
+
+
+
 
   //LCDsmall.clear();
 
@@ -870,9 +702,9 @@ Serial.print("starting up");
   }
 
 
-Serial.print("Tank temp is");
+  Serial.print("Tank temp is");
 
-Serial.println(TanktempC);
+  Serial.println(TanktempC);
   Serial.print("running Ambient temp_______________");
   AmbientSensor.requestTemperatures(); // Send the command to get temperatures
   AmbienttempC = AmbientSensor.getTempC(AmbientThermometer);
@@ -905,10 +737,10 @@ Serial.println(TanktempC);
 
 
   counterValue = 10;
- 
- Serial.println("Starting Ethernet");
- 
-    delay(1000);
+
+  Serial.println("Starting Ethernet");
+
+  delay(1000);
   // start the Ethernet connection:
   if (Ethernet.begin(mac) == 0) {
     Serial.println("Failed to configure Ethernet using DHCP");
@@ -916,135 +748,143 @@ Serial.println(TanktempC);
     Ethernet.begin(mac, ip);
   }
 
-   Serial.println("Ethernet Ready");
-  
- turn_on_shelf_light();
+  Serial.println("Ethernet Ready");
 
- 
+  turn_on_shelf_light();
+
+
 }
 
 
 
 ///// --------------------------VOID LOOP -------------------------------------------------------------------------------------------
 void loop() {
- RTC.getTime();
 
-current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600);
- // Serial.println("Blink Test Led");
-  blinkTestLed();
- 
- //  Serial.println("Check GFCI");
+  if (DEBUG_Sequence_tracker) Serial.println("Top Of Loop");
+
+  RTC.getTime();
+
+  current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600);
   
- // checkGFCI();
- 
- 
- 
- 
- // Serial.println("get Temps");
+  if (DEBUG_Sequence_tracker) Serial.println("Blink Test Led");
+  
+  blinkTestLed();
+
+  if (DEBUG_Sequence_tracker) Serial.println("Check GFCI");
+
+  // checkGFCI();
+
+
+
+
+  if (DEBUG_Sequence_tracker) Serial.println("get Temps");
   GetTemps();
- // Serial.println("overtemp Protection");
+  if (DEBUG_Sequence_tracker) Serial.println("overtemp Protection");
   overtemp_protection();
- // Serial.println("Check Mode");
+  if (DEBUG_Sequence_tracker) Serial.println("Check Mode");
   checkmode();
- // Serial.println("print Date");
+  if (DEBUG_Sequence_tracker) Serial.println("print Date");
   printDate();
   // printPH();
- 
-//  Serial.println("print temp");
+
+  if (DEBUG_Sequence_tracker) Serial.println("print temp");
   printTemp();
- // Serial.println("Run Fuge Light");
+  if (DEBUG_Sequence_tracker) Serial.println("Run Fuge Light");
   RunFugelight();
-//  Serial.println("Print Heater");
-   printHeater();
-//  Serial.println("Print Chiller");
- 
- 
- 
-//  Serial.println("Feeding Mode");
+  if (DEBUG_Sequence_tracker)Serial.println("Print Heater");
+  printHeater();
+  if (DEBUG_Sequence_tracker)Serial.println("Print Chiller");
+
+
+
+  if (DEBUG_Sequence_tracker)Serial.println("Feeding Mode");
   FeedingMode();
-//  Serial.println("Water Change Mode");
+  if (DEBUG_Sequence_tracker)Serial.println("Water Change Mode");
   WaterChangeMode();
- 
- 
- 
-  
- // Serial.println("outputs");
+
+
+
+
+  if (DEBUG_Sequence_tracker)Serial.println("outputs");
   outputs();
   // Voltage_Detected_Where();  use when voltage sensor is attached
   //Reset_Voltage_Fault();  // will cause a continully reset
-  
-  //Serial.println("SChekc for Voltage");
+
+  if (DEBUG_Sequence_tracker)Serial.println("SChekc for Voltage");
   check_for_Voltage();
-    
-//Serial.println("Status of heroku info");
+
+  if (DEBUG_Sequence_tracker)Serial.println("Status of heroku info");
   status_of_heroku_info();
- // Serial.println("Print Ambient Temp");
+  if (DEBUG_Sequence_tracker)Serial.println("Print Ambient Temp");
   printAmbientTemp();
- // Serial.println("heroku Screen Controls");
+  if (DEBUG_Sequence_tracker)Serial.println("heroku Screen Controls");
   heroku_Screen_controls();
- // Serial.println("Small //LCD Controller");
+  if (DEBUG_Sequence_tracker)Serial.println("Small //LCD Controller");
   Small_LCD_Controller();
- // Serial.println("Maintain heroku Connection");
- 
+  if (DEBUG_Sequence_tracker)Serial.println("Maintain heroku Connection");
   Maintain_heroku_connection();
 
   /// Test_ATO();  // Used to test inputs and outputs only
- 
-//Serial.println("ATO");
- ATO();
- // Serial.println("Screen ATO");
+
+  if (DEBUG_Sequence_tracker)Serial.println("ATO");
+  ATO();
+
+  if (DEBUG_Sequence_tracker) Serial.println("Screen ATO");
   Screen_ATO();
- Skimmer_Controller();
- 
- 
- Light_shelf_Controller();
+
+  if (DEBUG_Sequence_tracker) Serial.println("Skimmer Controller");  
+  Skimmer_Controller();
+
+  if (DEBUG_Sequence_tracker) Serial.println("Ligth Shelf Controller"); 
+  Light_shelf_Controller();
 
 }
 
 
- 
+
 
 
 void Skimmer_Controller(){
-  
- float current_time  = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
- float turn_on_skimmer_when;
- 
-   if (skimmer_delay_bool == true ){
-turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
-   }
- 
+
+  float current_time  = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
+  float turn_on_skimmer_when;
+
+  if (skimmer_delay_bool == true ){
+    turn_on_skimmer_when = skimmer_delay_start_time + skimmer_delay_time;
+  }
+
   if(waterchangemode == 1 || waterchangemoderunning == 1 || feedmoderunning == 1){
-       skimmer_delay_bool = true;
-       
-       } 
- 
- if (current_time  >= turn_on_skimmer_when){
-   if (skimmer_delay_bool == true ){
-   
-   
-     
-       if(waterchangemode == 1 || waterchangemoderunning == 1 || feedmoderunning == 1){
-       
-       
-       }else{
-         set_Skimmer_output_to = true; 
-         skimmer_delay_bool = false; 
-       }
-   
-   
- 
- 
-   }
- 
- }
- 
-  
+    skimmer_delay_bool = true;
+
+  } 
+
+  if (current_time  >= turn_on_skimmer_when){
+    if (skimmer_delay_bool == true ){
+
+
+
+      if(waterchangemode == 1 || waterchangemoderunning == 1 || feedmoderunning == 1){
+
+
+      }
+      else{
+        set_Skimmer_output_to = true; 
+        skimmer_delay_bool = false; 
+      }
+
+
+
+
+    }
+
+  }
+
+
 }
 
- 
 
- 
+
+
 void blinkTestLed()
 {
   if(digitalRead(ledTestPin))
@@ -1099,21 +939,21 @@ void printHeater()
   if(Tank_tempF < Heater_on_temp){     // turn Heater on if temp is below Heater_on_temp
     // Turn Heater On     
     set_Heater_output_to = true;    
-  
+
     // Serial.println("*****  Heater ON *****");
   }  
   int tank_tempf =  Tank_tempF;
   if(tank_tempf > 100){     // turn Heater on if temp is below Heater_on_temp
     // Turn Heater On      
     set_Heater_output_to = true;  
-     
+
     //  Serial.println("*****  Heater ON *****");
   }  
   else {
     if(Tank_tempF > Heater_off_temp){    //turn Heater off if temp is above Heater_off_temp
       // Turn Heater Off     
       set_Heater_output_to = false;     
-    
+
       //   Serial.println("*****  Heater OFF *****");
     }
   }
@@ -1152,20 +992,20 @@ void printHeater()
       //LCD.print("Heater: Off");
     }
   }
-  
-  
+
+
 }
 
- 
 
- 
+
+
 void ClearAlarmMessage()
 {
   //LCD.setCursor(0, 3);
   //LCD.print("                    "); 
 }
 
- 
+
 void Buzzer(int targetPin, long frequency, long length) {
   long delayValue = 1000000/frequency/2; // calculate the delay value between transitions
   // 1 second's worth of microseconds, divided by the frequency, then split in half since
@@ -1203,12 +1043,12 @@ void WaterChangeMode(){
 
     // Turn mainpump Off      
     set_mainpump_output_to = false;  
-   // Turn Skimmer Off 
-   set_Skimmer_output_to = false; 
+    // Turn Skimmer Off 
+    set_Skimmer_output_to = false; 
     // Turn powerhead Off       
     set_powerhead_output_to = false;    
 
-    
+
 
     waterchangemoderunning = 1;
     feedmode = 3;
@@ -1224,13 +1064,13 @@ void WaterChangeMode(){
       set_mainpump_output_to = true;  
       //Turn Skimmer On
       set_Skimmer_output_to = true; 
- 
-      
+
+
     }
 
     // Turn powerhead On       
     set_powerhead_output_to = true;       
-    
+
   }
   waterchangemode = 0;   
 
@@ -1248,7 +1088,7 @@ void WaterChangeMode(){
     } 
   }
 
- 
+
 }
 
 void FeedingMode(){
@@ -1331,15 +1171,15 @@ void FeedingMode(){
       // Turn mainpump On     
       set_mainpump_output_to = true;  
       set_Skimmer_output_to = true; 
-  
-  if (skimmer_delay_bool == false && set_Skimmer_output_to == false){
-   skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
-  skimmer_delay_bool = true;
-  skimmer_delay_time = 0.45;
-    Serial.println("setting time in Feeding Mode");
-  
-    }
-      
+
+      if (skimmer_delay_bool == false && set_Skimmer_output_to == false){
+        skimmer_delay_start_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600); 
+        skimmer_delay_bool = true;
+        skimmer_delay_time = 0.45;
+        Serial.println("setting time in Feeding Mode");
+
+      }
+
     }
     feedmoderunning = 0;
     pumps_off = -10;
@@ -1357,8 +1197,8 @@ void FeedingMode(){
     else{
       // Turn mainpump Off    
       set_mainpump_output_to = false;
-       set_Skimmer_output_to = false;  
-      
+      set_Skimmer_output_to = false;  
+
 
     }
     feedmoderun = HIGH;
@@ -1418,10 +1258,10 @@ void FeedingMode(){
   }
 
   feedmode = 0;
-  
+
 }
 
- 
+
 
 void outputs(){
   // should be the only place the “digitalwrite” for a output is used
@@ -1437,10 +1277,10 @@ void outputs(){
 
   if (set_mainpump_output_to == true && disablemainpump == false){
 
-   bottom_relays.digitalWrite(Main_Pump, LOW);
+    bottom_relays.digitalWrite(Main_Pump, LOW);
   }
   else{
-   bottom_relays.digitalWrite(Main_Pump, HIGH);
+    bottom_relays.digitalWrite(Main_Pump, HIGH);
   }
   // PowerHead Control
   if (set_powerhead_output_to == true && disablepowerhead == false){
@@ -1455,16 +1295,16 @@ void outputs(){
   // Chiller Control
   if (set_chiller_output_to == true && disablechiller == false){
 
-  //  digitalWrite(Chiller, LOW);
+    //  digitalWrite(Chiller, LOW);
   }
   else{
-  //  digitalWrite(Chiller, HIGH);
+    //  digitalWrite(Chiller, HIGH);
   }
-  
+
   // Refuge light Control
   if (set_refugelight_output_to == true && disablerefugelight == false){
 
-   top_relays.digitalWrite(RefugeLED, LOW);
+    top_relays.digitalWrite(RefugeLED, LOW);
   }
   else{
     top_relays.digitalWrite(RefugeLED, HIGH);
@@ -1482,13 +1322,13 @@ void outputs(){
   }
 
 
-  
+
 
 }
 
 
 void Send_message_to_iphone(char *firsthalf, char *secondhalf){
-/*
+  /*
   /*
    if (counterValue > 0) {
    if (DEBUG) Serial.println(counterValue);
@@ -1508,27 +1348,27 @@ void Send_message_to_iphone(char *firsthalf, char *secondhalf){
    }
    }
    
-
-  if (localClient.connect()) {
-
-    int returnCode = Avviso.push(firsthalf, secondhalf, 0);
-    if (returnCode == 200) {
-      if (DEBUG) Serial.println("OK.");      
-    } 
-    else {
-      if (DEBUG) Serial.print("Error. Server returned: ");      
-      if (DEBUG) Serial.print(returnCode);      
-    }
-    // }  
-  }
-
-  Serial.println("disconnecting from Avviso.\n=====\n\n");
-  localClient.stop();
-
-  // We may improve this by dropping the connection but not 
-  // resetting the ethernet shield altogether.
-  resetEthernetShield();
-*/
+   
+   if (localClient.connect()) {
+   
+   int returnCode = Avviso.push(firsthalf, secondhalf, 0);
+   if (returnCode == 200) {
+   if (DEBUG) Serial.println("OK.");      
+   } 
+   else {
+   if (DEBUG) Serial.print("Error. Server returned: ");      
+   if (DEBUG) Serial.print(returnCode);      
+   }
+   // }  
+   }
+   
+   Serial.println("disconnecting from Avviso.\n=====\n\n");
+   localClient.stop();
+   
+   // We may improve this by dropping the connection but not 
+   // resetting the ethernet shield altogether.
+   resetEthernetShield();
+   */
 
 }
 
@@ -1545,6 +1385,7 @@ int shelf_lightsrunning = 0;
 boolean shelf_lightsrun = LOW;
 int shelf_light_time = 1;  //Turn off power heads for this amount of time when feed mode button is pressed.
 int shelf_lights_off, shelf_lights_off_second, shelf_lights_off_minute, shelf_lights_on_minute, shelf_lights_off_hour, shelf_lights_on_second, shelf_lights_on_hour, shelf_lights_on;
+
 
 
 
