@@ -2,7 +2,7 @@
 
 
 
- 
+
 
 void Send_message_to_Reef_Sense(String Fault_Zone,String Fault_Alert ) {
 
@@ -10,37 +10,37 @@ void Send_message_to_Reef_Sense(String Fault_Zone,String Fault_Alert ) {
 
 
 
-   Serial.println("Going to TRY to send FAULT data");
+  Serial.println("Going to TRY to send FAULT data");
 
 
 
   digitalWrite(Grounding_plug, HIGH); /// turn off grounding probe
 
- delay(500);
-
-    
-
-  
+  delay(500);
 
 
 
 
 
- String faultdata = "{\"f_z\":\"" + Fault_Zone + "\", \"t_n\":\"" + arduino_reef_tank_id + "\", \"f_a\":\"" + Fault_Alert + "\"}";
-
- 
-
-// Serial.print("Fault Data to Send: ");
-
-// Serial.println(faultdata);
-
- 
 
 
 
 
+  String faultdata = "{\"f_z\":\"" + Fault_Zone + "\", \"t_n\":\"" + arduino_reef_tank_id + "\", \"f_a\":\"" + Fault_Alert + "\"}";
 
-  
+
+
+  // Serial.print("Fault Data to Send: ");
+
+  // Serial.println(faultdata);
+
+
+
+
+
+
+
+
 
   String uri = ("/faults");
 
@@ -52,55 +52,55 @@ void Send_message_to_Reef_Sense(String Fault_Zone,String Fault_Alert ) {
 
     // send the HTTP PUT request:
 
-    
 
-    
 
-  Serial.println("start sending data");
 
-  client.print("POST ");
 
-  client.print(uri);
+    Serial.println("start sending data");
 
-  client.println(" HTTP/1.1");
+    client.print("POST ");
 
-  client.print("Host: ");
+    client.print(uri);
 
-  client.println(heroku_url);
+    client.println(" HTTP/1.1");
 
- 
+    client.print("Host: ");
 
-   client.println("Content-Type: application/json");
+    client.println(heroku_url);
 
-  //client.println("Content-Type: application/x-www-form-urlencoded");
 
-  client.println("Connection: close");
 
-  client.print("Content-Length: ");
+    client.println("Content-Type: application/json");
 
-  client.println(faultdata.length());
+    //client.println("Content-Type: application/x-www-form-urlencoded");
 
-  client.println();
+    client.println("Connection: close");
 
-   Serial.print("data:-----");
+    client.print("Content-Length: ");
 
- Serial.println(faultdata);
+    client.println(faultdata.length());
 
-  client.print(faultdata);
+    client.println();
 
-  client.println();
+    Serial.print("data:-----");
 
-  Serial.println("done sending fault data");
+    Serial.println(faultdata);
 
-    
+    client.print(faultdata);
 
- last_connection_sent = true;
+    client.println();
 
-   
+    Serial.println("done sending fault data");
 
-  failures = 0;
 
-     
+
+    last_connection_sent = true;
+
+
+
+    failures = 0;
+
+
 
   }
 
@@ -110,7 +110,7 @@ void Send_message_to_Reef_Sense(String Fault_Zone,String Fault_Alert ) {
 
     last_connection_sent = false;
 
-      
+
 
     failures = failures + 1;
 
@@ -130,7 +130,7 @@ void Send_message_to_Reef_Sense(String Fault_Zone,String Fault_Alert ) {
 
 
 
-digitalWrite(Grounding_plug, LOW); /// turn off grounding probe
+  digitalWrite(Grounding_plug, LOW); /// turn off grounding probe
 
 
 
@@ -144,9 +144,10 @@ digitalWrite(Grounding_plug, LOW); /// turn off grounding probe
 
 
 
- 
 
- 
+
+
+
 
 
 
