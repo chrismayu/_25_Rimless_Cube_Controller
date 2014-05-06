@@ -164,6 +164,7 @@ PCF8574 buttons;
 #define DEBUG_ATO 0
 #define DEBUG_Refuge 0
 #define DEBUG_Shelf_light 0
+#define SET_Clock 0
 
  
 //#define DEBUG
@@ -787,7 +788,9 @@ Serial.print("starting up");
   
   // start clock
   RTC.getRAM(54, (uint8_t *)&TimeIsSet, sizeof(uint16_t));
+ 
 
+  if (SET_Clock) {
 
    if (TimeIsSet != 0xaa54)
   {
@@ -800,7 +803,7 @@ Serial.print("starting up");
     TimeIsSet = 0xaa54;
     RTC.setRAM(54, (uint8_t *)&TimeIsSet, sizeof(uint16_t));
   }
-
+  }
 
   // Control Register for SQW pin which can be used as an interrupt.
 
