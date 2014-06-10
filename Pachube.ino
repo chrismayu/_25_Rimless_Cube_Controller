@@ -318,9 +318,6 @@ void heroku_in_out() {
 
  
  
- 
- 
- 
 
 
 // this method makes a HTTP connection to the server:
