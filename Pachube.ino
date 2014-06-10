@@ -303,7 +303,7 @@ void heroku_in_out() {
   //    \"r_l\":\"" + refuge_led + "\",  
 
 
-  String data = "{\"m_t\":\"" + main_tempAsString + "\", \"t_n\":\"" + arduino_reef_tank_id + "\", \"a_t\":\"" + Ambient_tempAsString + "\",\"w_l\":\"" + get_string(current_status_of_water_level) + "\", \"r_l\":\"" + refuge_led + "\", \"skim\":\"" + skimmer + "\", \"ph\":\"" + powerhead + "\", \"m_p\":\"" + main_pump + "\", \"h\":\"" + heater + "\", \"h_c\":\"" + heroku_code + "\", \"ato\":\"" + ato_valve + "\"}";
+  String data = "{\"m_t\":\"" + main_tempAsString + "\", \"t_n\":\"" + arduino_reef_tank_id + "\", \"a_t\":\"" + Ambient_tempAsString + "\",\"w_l\":\"" + water_level + "\", \"r_l\":\"" + refuge_led + "\", \"skim\":\"" + skimmer + "\", \"ph\":\"" + powerhead + "\", \"m_p\":\"" + main_pump + "\", \"h\":\"" + heater + "\", \"h_c\":\"" + heroku_code + "\", \"ato\":\"" + ato_valve + "\"}";
 
   // Serial.print("Data to Send: ");
 
@@ -316,20 +316,10 @@ void heroku_in_out() {
 }
 
 
-String get_string(boolean boolean_data){
-  
-  String finished;
-  
-   if(boolean_data == true){
-    get_string = "T";
-  }else{
-    get_string = "F";
-  }   
-  
-  
-  return get_string;
-  
-}
+ 
+ 
+ 
+ 
  
 
 
