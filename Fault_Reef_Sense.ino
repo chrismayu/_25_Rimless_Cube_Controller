@@ -5,43 +5,19 @@
 
 
 void Send_message_to_Reef_Sense(String Fault_Zone,String Fault_Alert ) {
-
-
-
-
-
+ 
   Serial.println("Going to TRY to send FAULT data");
-
-
-
+ 
   digitalWrite(Grounding_plug, HIGH); /// turn off grounding probe
 
   delay(500);
-
-
-
-
-
-
-
-
-
+ 
   String faultdata = "{\"f_z\":\"" + Fault_Zone + "\", \"t_n\":\"" + arduino_reef_tank_id + "\", \"f_a\":\"" + Fault_Alert + "\"}";
-
-
-
+ 
   // Serial.print("Fault Data to Send: ");
 
   // Serial.println(faultdata);
-
-
-
-
-
-
-
-
-
+ 
   String uri = ("/faults");
 
   // if there's a successful connection:
@@ -51,10 +27,7 @@ void Send_message_to_Reef_Sense(String Fault_Zone,String Fault_Alert ) {
     Serial.println("connecting...");
 
     // send the HTTP PUT request:
-
-
-
-
+ 
 
     Serial.println("start sending data");
 

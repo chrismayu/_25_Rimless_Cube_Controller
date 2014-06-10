@@ -51,6 +51,9 @@ PCF8574 buttons;
 #define DEBUG_Shelf_light 0
 #define SET_Clock 0
 #define DEBUG_Sequence_tracker 0
+#define USE_Serial_3 0
+#define USE_Ethernet 1
+#define DEBUG_Buttons 1
 
  
 
@@ -110,8 +113,8 @@ char *firsthalf;
 char *secondhalf;
 
 
-#define TankTempSensorPin 2
-#define AmbientTempSenserPin 3
+#define TankTempSensorPin 4
+#define AmbientTempSenserPin 6
 #define ledTestPin 13
 
 
@@ -375,6 +378,8 @@ byte oldHour;
 
 
 // PH and ORP stamp
+/*
+
 int orpValue = 0;
 char PHtext[20];
 int PHerror;
@@ -393,7 +398,7 @@ const int eeAddrPHCal = 5;
 float PH_heroku_AVG;
 float hourlastsent;
 
-
+*/
 //// heroku 
 
 //char heroku_data[128]; // this is the string to upload to heroku
@@ -624,15 +629,15 @@ void setup() {
 
   if (SET_Clock) {
 
-    if (TimeIsSet != 0xaa54)
+    if (TimeIsSet != 0xaa55)
     {
       Serial.println("INFO:Time is not defined. Set time now.");
       RTC.stopClock();
-      RTC.fillByYMD(2013, 06, 24);
-      RTC.fillByHMS(12, 36, 00);
+      RTC.fillByYMD(2014, 06, 9);
+      RTC.fillByHMS(14, 40, 00);
       RTC.setTime();
       RTC.startClock();
-      TimeIsSet = 0xaa54;
+      TimeIsSet = 0xaa55;
       RTC.setRAM(54, (uint8_t *)&TimeIsSet, sizeof(uint16_t));
     }
   }
@@ -652,6 +657,8 @@ void setup() {
   current_time = RTC.hour + ((float)RTC.minute / (float)60) + ((float)RTC.second / (float)3600);
 
 
+if (USE_Serial_3){
+/*
   // BYTE Keyword is no longer supprted
   // pH stamp
   /// Serial1.flush(); 
@@ -659,20 +666,22 @@ void setup() {
   Serial3.print("L1");
   Serial3.print(13); //, BYTE);  masked problem
   // pHCalibrationValue = eepromReadFloat(eeAddrPHCal);
-
+  
+  */
+}
 
 
   // Start up the library for Tank Sensor
   TankSensor.begin();
   if (!TankSensor.getAddress(TankThermometer, 0)) Serial.println("Unable to connect with Tank Temp Sensor");
   // set the resolution to 9 bit (Each Dallas/Maxim device is capable of several different resolutions)
-  TankSensor.setResolution(TankThermometer, 9);
+  TankSensor.setResolution(TankThermometer, 12);
 
   // Start up the library for Tank Sensor
   AmbientSensor.begin();
   if (!AmbientSensor.getAddress(AmbientThermometer, 0)) Serial.println("Unable to connect with Ambient Temp Sensor");
   // set the resolution to 9 bit (Each Dallas/Maxim device is capable of several different resolutions)
-  AmbientSensor.setResolution(AmbientThermometer, 9);
+  AmbientSensor.setResolution(AmbientThermometer, 12);
 
 
 
@@ -694,7 +703,7 @@ void setup() {
     TankSensor.begin();
     if (!TankSensor.getAddress(TankThermometer, 0)) Serial.println("Unable to connect with Tank Temp Sensor"); 
     // set the resolution to 9 bit (Each Dallas/Maxim device is capable of several different resolutions)
-    TankSensor.setResolution(TankThermometer, 9);
+    TankSensor.setResolution(TankThermometer, 12);
     TankSensor.requestTemperatures(); // Send the command to get temperatures
     TanktempC = TankSensor.getTempC(TankThermometer);
     Serial.print("Tank temp is");
@@ -719,7 +728,7 @@ void setup() {
     AmbientSensor.begin();
     if (!AmbientSensor.getAddress(AmbientThermometer, 0)) Serial.println("Unable to connect with Ambient Temp Sensor"); 
     // set the resolution to 9 bit (Each Dallas/Maxim device is capable of several different resolutions)
-    AmbientSensor.setResolution(AmbientThermometer, 9);
+    AmbientSensor.setResolution(AmbientThermometer, 12);
     AmbientSensor.requestTemperatures(); // Send the command to get temperatures
     AmbienttempC = AmbientSensor.getTempC(AmbientThermometer);
     Serial.print("Ambient temp is");
@@ -748,6 +757,12 @@ void setup() {
     Ethernet.begin(mac, ip);
   }
 
+
+ if (Ethernet.begin(mac) == 0) {
+    Serial.println("2 Failed to configure Ethernet using DHCP");
+    // DHCP failed, so use a fixed IP address:
+  
+  }
   Serial.println("Ethernet Ready");
 
   turn_on_shelf_light();
@@ -775,25 +790,11 @@ void loop() {
   // checkGFCI();
 
 
+  checkmode();  ///used for Buttons
 
 
-  if (DEBUG_Sequence_tracker) Serial.println("get Temps");
-  GetTemps();
-  if (DEBUG_Sequence_tracker) Serial.println("overtemp Protection");
-  overtemp_protection();
-  if (DEBUG_Sequence_tracker) Serial.println("Check Mode");
-  checkmode();
-  if (DEBUG_Sequence_tracker) Serial.println("print Date");
-  printDate();
-  // printPH();
 
-  if (DEBUG_Sequence_tracker) Serial.println("print temp");
-  printTemp();
-  if (DEBUG_Sequence_tracker) Serial.println("Run Fuge Light");
-  RunFugelight();
-  if (DEBUG_Sequence_tracker)Serial.println("Print Heater");
-  printHeater();
-  if (DEBUG_Sequence_tracker)Serial.println("Print Chiller");
+ 
 
 
 

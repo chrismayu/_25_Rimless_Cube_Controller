@@ -91,8 +91,10 @@ void checkmode()
   {
  
 
-   Serial.println("PB pushed");
+   Serial.println("Shelf Light PB pushed");
+   send_heroku_data();
     turn_on_shelf_light();
+    
   }
 
 
