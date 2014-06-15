@@ -113,8 +113,8 @@ char *firsthalf;
 char *secondhalf;
 
 
-#define TankTempSensorPin 4
-#define AmbientTempSenserPin 6
+#define TankTempSensorPin 6
+#define AmbientTempSenserPin 7
 #define ledTestPin 13
 
 
@@ -794,7 +794,7 @@ void loop() {
 
 
 
- 
+ GetTemps();
 
 
 

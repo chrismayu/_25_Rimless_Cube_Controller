@@ -71,7 +71,7 @@ void ATO2(){ /// Main ATO Program Controller
   }
 
 
-  if(buttons.digitalRead(ATO_Water_is_High) == HIGH ){
+  if(buttons.digitalRead(ATO_Water_is_High) == LOW ){
 
 
 

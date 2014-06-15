@@ -162,7 +162,7 @@ void status_of_heroku_info(){
     int Ambient_tempF3 = Ambienttemp_first_heroku * 100; /// makes 26 into 2600
       Ambienttemp_second_heroku = Ambient_tempF2 - Ambient_tempF3;
     if(Ambienttemp_first_heroku > 40){
-      Serial.print(" Ambient Temp F told heroku to work: ");
+     // Serial.print(" Ambient Temp F told heroku to work: ");
       // go_ahead_push_to_heroku = true;
       // heroku_code = "08";
     }else{
