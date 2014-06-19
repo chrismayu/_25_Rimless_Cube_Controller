@@ -2,7 +2,7 @@
 void ATO(){ /// Main ATO Program Controller
 
 
-
+ATO2();
   if(RTC.hour == 8 && RTC.minute == 8){
 
     ATO_Fault_Count = 0;
@@ -169,12 +169,12 @@ void ATO2(){ /// Main ATO Program Controller
 
     if (DEBUG_ATO) Serial.println("ATO Pump Running");
 
-    digitalWrite(ATO_Valve, LOW); //turn ON ATO Pump
+    bottom_relays.digitalWrite(ATO_Valve, LOW); //turn ON ATO Pump
 
   }
   else{
 
-    digitalWrite(ATO_Valve, HIGH); // Turn OFF Pump
+    bottom_relays.digitalWrite(ATO_Valve, HIGH); // Turn OFF Pump
 
   }
 
