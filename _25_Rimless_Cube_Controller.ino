@@ -30,6 +30,8 @@
 #define yellowchip 0x21 // for Push Buttons
 #define greenchip 0x20 // Used on the Bottoms Relays
 
+#define purple_top_chip 0x27 // Used on the Top Relays
+#define purple_bottom_chip 0x25 // Used on the Bottoms Relays
 
 #define pinkchip 0x22 // Used on the Top Relays
 #define sparklechip 0x23 // for Push Buttons
@@ -64,7 +66,7 @@ PCF8574 buttons;
 #define RESET_INTERVAL 30000 // if connection fails/resets wait 30 seconds before trying again - should not be less than 5
 #define heroku_API_KEY "F_oeCakGxHbk133xWCLNF6Z9sC01qCJ5cTfrOWl63oY" // fill in your API key 
 
-char* heroku_url = "reefsense.herokuapp.com";
+char* heroku_url = "reefsense.herokuapp.com";  
 
 String arduino_reef_tank_id = "64c7";
 
@@ -354,7 +356,7 @@ boolean  Over_temp_Level_3_message_sent = false;
 
 // Refuge
 const float FugeLightOn = 1; 
-const float FugeLightOff = 9;
+const float FugeLightOff = 12;
 float FugeLightOFF12 = 0; 
 
 
@@ -528,11 +530,12 @@ void setup() {
   
   /* Start I2C bus and PCF8574 instance */
   Serial.print("red");
-  top_relays.begin(redchip);
+  top_relays.begin(purple_top_chip);
   Serial.print("green");
-  bottom_relays.begin(greenchip);
+  bottom_relays.begin(purple_bottom_chip);
   Serial.print("pink");
   buttons.begin(pinkchip);
+
 
  
 
@@ -796,7 +799,7 @@ void loop() {
 
  GetTemps();
 
-
+  HeaterController();
 
   if (DEBUG_Sequence_tracker)Serial.println("Feeding Mode");
   FeedingMode();
@@ -930,7 +933,7 @@ void printDate()
 
 
 ///-------------------Heater control--------------------------------------
-void printHeater()
+void HeaterController()
 {
   float Tank_tempF =(DallasTemperature::toFahrenheit(TanktempC)); // Converts TanktempC to Fahrenheit
 
@@ -958,41 +961,8 @@ void printHeater()
       //   Serial.println("*****  Heater OFF *****");
     }
   }
-  if(keypadmode == Temp_Screen){
-    //LCD.GotoXY(0,6);           
-    if(digitalRead(Heater) == LOW){
-      //LCD.print("Heater  :  ON ");
-    }
-    else{
-      //LCD.print("Heater  : Off");
-    }
-  }
-
-  if(keypadmode == Heater_Screen){
-
-    //LCD.setCursor(0, 2);
-    //LCD.print("Tank: "); 
-    float tempF =(DallasTemperature::toFahrenheit(TanktempC)); // Converts TanktempC to Fahrenheit
-    //LCD.print(tempF); 
-    //LCD.print(" F"); 
-
-    //LCD.GotoXY(0,4);
-    //LCD.print("Turn  ON: ");  
-
-    //LCD.print(Heater_on_temp);
-    //LCD.GotoXY(0,5);
-    //LCD.print("Turn OFF: ");  
-
-    //LCD.print(Heater_off_temp);
-    //LCD.GotoXY(0,7); 
-
-    if(digitalRead(Heater) == LOW){
-      //LCD.print("Heater:  ON ");
-    }
-    else{
-      //LCD.print("Heater: Off");
-    }
-  }
+ 
+ 
 
 
 }

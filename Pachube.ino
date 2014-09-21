@@ -325,7 +325,7 @@ void sendData(String thisData) {
 
   String uri = ("/watchers");
   // if there's a successful connection:
-  if (client.connect(server, 80)) {
+  if (client.connect(heroku_url, 80)) {
     Serial.println("connecting...");
     // send the HTTP PUT request:
 
@@ -348,7 +348,23 @@ void sendData(String thisData) {
     client.print(thisData);
     client.println();
     Serial.println("done sending data");
+ Serial.println(" JSON Reading out Start---------------");
+ Serial.println();
+    Serial.print("POST ");
+    Serial.print(uri);
+    Serial.println(" HTTP/1.1");
+    Serial.print("Host: ");
+    Serial.println(heroku_url);
 
+    Serial.println("Content-Type: application/json");
+    //Serial.println("Content-Type: application/x-www-form-urlencoded");
+    Serial.println("Connection: close");
+    Serial.print("Content-Length: ");
+    Serial.println(thisData.length());
+    Serial.println();
+    Serial.print(thisData);
+    Serial.println();
+ Serial.println(" JSON Reading out End---------------");
     last_connection_sent = true;
 
     failures = 0;
